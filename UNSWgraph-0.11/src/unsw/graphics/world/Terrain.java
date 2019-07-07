@@ -3,10 +3,15 @@ package unsw.graphics.world;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.jogamp.opengl.GL3;
+
+import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
+import unsw.graphics.geometry.Point3D;
 
 
 
@@ -125,6 +130,16 @@ public class Terrain {
     public void addRoad(float width, List<Point2D> spine) {
         Road road = new Road(width, spine);
         roads.add(road);        
+    }
+    
+    public void drawTerrain(GL3 gl, CoordFrame3D frame){
+        List<Point3D> vertices = new ArrayList<Point3D>();
+        List<Integer> indices = new ArrayList<Integer>();
+        
+    }
+    
+    public void printAltitude(){
+    	System.out.println(Arrays.deepToString(this.altitudes));
     }
 
 }

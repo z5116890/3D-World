@@ -31,11 +31,14 @@ public class World extends Application3D {
      * 
      * @param args - The first argument is a level file in JSON format
      * @throws FileNotFoundException
+     * change run configurations
      */
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
+        //loaded terrain has altitude loaded
+        terrain.printAltitude();
     }
 
 	@Override
