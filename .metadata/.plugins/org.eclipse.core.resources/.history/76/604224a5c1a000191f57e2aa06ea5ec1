@@ -12,7 +12,6 @@ import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
-import unsw.graphics.geometry.TriangleMesh;
 
 
 
@@ -139,7 +138,7 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh drawTerrain(){
+    public void drawTerrain(){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         
@@ -170,9 +169,9 @@ public class Terrain {
 	        	indices.add(middleTri2++);
 	        	indices.add(endTri2++);
             }
+        	
+        	
         }
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
-        return terrain;
         
     }
     

@@ -12,7 +12,6 @@ import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
-import unsw.graphics.geometry.TriangleMesh;
 
 
 
@@ -139,40 +138,39 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh drawTerrain(){
+    public void drawTerrain(GL3 gl, CoordFrame3D frame){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         
-        //vertices
-        for(int i = 0; i < this.depth; i++) {
-            for(int j = 0; j < this.width; j++) {
+        for(int i = 0; i < this.altitudes.length; i++) {
+            for(int j = 0; j < this.altitudes[i].length; j++) {
                 vertices.add(new Point3D(j,this.altitude(j, i), i));
             }
         }
         
-        //faces
-        for(int i = 1; i < this.width; i++){
+        
+        for(int i = 1; i < this.altitudes.length; i++){
         	//first triangle of quad
-        	int startTri1 = i * this.width;
+        	int startTri1 = i * this.altitudes.length;
             int middleTri1 = startTri1 + 1;
-            int endTri1 = (i - 1) * this.width + 1;
+            int endTri1 = (i - 1) * this.altitudes.length + 1;
             //second triangle of quad
-            int startTri2 = (i - 1) * this.width + 1;
-            int middleTri2 = (i - 1) * this.width;
-            int endTri2 = i * this.width;
-            for(int j = 1; j < this.depth - 1; j++) {
-            	//add points for 1st triangle
+            int startTri2 = (i - 1) * this.altitudes.length + 1;
+            int middleTri2 = (i - 1) * this.altitudes.length;
+            int endTri2 = i * this.altitudes.length;
+            
+            for(int j = 1; j < this.altitudes[i].length - 1; j++) {
 	        	indices.add(startTri1++);
 	        	indices.add(middleTri1++);
 	        	indices.add(endTri1++);
-	        	//add points for 2 triangle to form quad
+	        	
 	        	indices.add(startTri2++);
 	        	indices.add(middleTri2++);
 	        	indices.add(endTri2++);
             }
+        	
+        	
         }
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
-        return terrain;
         
     }
     
@@ -181,8 +179,7 @@ public class Terrain {
     	System.out.println(Arrays.deepToString(this.altitudes));
     	System.out.println(this.altitude(5, 4));
     	System.out.println(this.width);
-    	System.out.println(this.depth);
-    	this.drawTerrain();
+    	System.out.println(this.length);
     }
 
 }

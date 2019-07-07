@@ -139,7 +139,7 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh drawTerrain(){
+    public void drawTerrain(){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         
@@ -172,7 +172,6 @@ public class Terrain {
             }
         }
         TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
-        return terrain;
         
     }
     
