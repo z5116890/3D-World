@@ -138,6 +138,7 @@ public class Terrain {
         
     }
     
+    //prints altitude
     public void printAltitude(){
     	System.out.println(Arrays.deepToString(this.altitudes));
     }
