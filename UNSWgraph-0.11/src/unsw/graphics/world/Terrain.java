@@ -103,6 +103,10 @@ public class Terrain {
         float altitude = 0;
 
         // TODO: Implement this
+        //next array corresponds to z
+        //next element corresponds to x
+        //y corresponds to altitude
+        altitude = this.altitudes[(int) z][(int) x];
         
         return altitude;
     }
@@ -132,6 +136,8 @@ public class Terrain {
         roads.add(road);        
     }
     
+    
+    //compute points from 2d array altitude
     public void drawTerrain(GL3 gl, CoordFrame3D frame){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
@@ -141,6 +147,7 @@ public class Terrain {
     //prints altitude
     public void printAltitude(){
     	System.out.println(Arrays.deepToString(this.altitudes));
+    	System.out.println(this.altitude(5, 4));
     }
 
 }
