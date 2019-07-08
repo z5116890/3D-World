@@ -29,6 +29,7 @@ public class Terrain {
     private List<Tree> trees;
     private List<Road> roads;
     private Vector3 sunlight;
+    
 
     /**
      * Create a new terrain
@@ -139,14 +140,15 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh drawTerrain(){
+    public TriangleMesh makeTerrain(GL3 gl){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
+        
         
         //vertices
         for(int i = 0; i < this.depth; i++) {
             for(int j = 0; j < this.width; j++) {
-                vertices.add(new Point3D(j,this.altitude(j, i), i));
+                vertices.add(new Point3D(j,this.altitudes[j][i], i));
             }
         }
         
@@ -160,7 +162,7 @@ public class Terrain {
             int startTri2 = (i - 1) * this.width + 1;
             int middleTri2 = (i - 1) * this.width;
             int endTri2 = i * this.width;
-            for(int j = 1; j < this.depth - 1; j++) {
+            for(int j = 1; j < this.depth; j++) {
             	//add points for 1st triangle
 	        	indices.add(startTri1++);
 	        	indices.add(middleTri1++);
@@ -171,18 +173,20 @@ public class Terrain {
 	        	indices.add(endTri2++);
             }
         }
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
+        System.out.println(indices);
+        TriangleMesh terrain = new TriangleMesh(vertices, indices, false);
+        terrain.init(gl);
+        
         return terrain;
         
     }
     
     //prints altitude
-    public void printAltitude(){
+    public void printAltitude(GL3 gl){
     	System.out.println(Arrays.deepToString(this.altitudes));
     	System.out.println(this.altitude(5, 4));
     	System.out.println(this.width);
     	System.out.println(this.depth);
-    	this.drawTerrain();
     }
 
 }

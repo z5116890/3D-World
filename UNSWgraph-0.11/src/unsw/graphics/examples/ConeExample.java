@@ -99,29 +99,47 @@ public class ConeExample extends Application3D implements MouseListener{
 
     private TriangleMesh makeCone(GL3 gl) {
         // Make the approximating triangular mesh.
-        List<Point3D> vertices = new ArrayList<Point3D>();
+    	List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
-
-        vertices.add(new Point3D(0, 0, height));
-
-        float tIncrement = 1f/NUM_SLICES;
-        for(int i = 0; i < NUM_SLICES; i++) {
-           float t = i*tIncrement;
-
-           float x = getX(t);
-           float y = getY(t);
-
-           vertices.add(new Point3D(x, y, 0));
-
-           indices.add(1 + i);
-           indices.add(1 + (i+1) % NUM_SLICES);
-           indices.add(0);
+        float[][] altitudes = {{0, 0, 0, 0, 0},
+                				{0, 0, 0.5f, 1, 0},
+                				{0, 0.5f, 1, 2, 0},
+                				{0, 0, 0.5f, 1, 0},
+                				{0, 0, 0, 0, 0}};
+        
+        //vertices
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < 5; j++) {
+                vertices.add(new Point3D(j,altitudes[j][i], i));
+            }
         }
-
-        TriangleMesh cone = new TriangleMesh(vertices, indices, true);
-
-        cone.init(gl);
-        return cone;
+        
+        //faces
+        for(int i = 1; i < 5; i++){
+        	//first triangle of quad
+        	int startTri1 = i * 5;
+            int middleTri1 = startTri1 + 1;
+            int endTri1 = (i - 1) * 5 + 1;
+            //second triangle of quad
+            int startTri2 = (i - 1) * 5 + 1;
+            int middleTri2 = (i - 1) * 5;
+            int endTri2 = i * 5;
+            for(int j = 1; j < 5; j++) {
+            	//add points for 1st triangle
+	        	indices.add(startTri1++);
+	        	indices.add(middleTri1++);
+	        	indices.add(endTri1++);
+	        	//add points for 2 triangle to form quad
+	        	indices.add(startTri2++);
+	        	indices.add(middleTri2++);
+	        	indices.add(endTri2++);
+            }
+        }
+        System.out.println(indices);
+        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
+        terrain.init(gl);
+        //terrain.draw(gl);
+        return terrain;
     }
 
 
