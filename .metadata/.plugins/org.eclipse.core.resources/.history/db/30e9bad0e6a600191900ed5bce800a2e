@@ -119,17 +119,11 @@ public class Terrain {
         //x right
         int x2 = (int) Math.ceil(x);
         //z towards negative
-        int z1 = (int) Math.floor(z);
+        int z1 = (int) Math.floor(x);
         //z towards positive
-        int z2 = (int) Math.ceil(z);
+        int z2 = (int) Math.ceil(x);
         
         float xOfR2 = (float) (x2 - (z - Math.floor(z)));
-        
-        System.out.println("x: "+ x + " x1: "+ x1 +" x2: "+ x2 +" z: "+ z +" z1: "+ z1 +" z2: "+ z2 + " xhypotenuse: "+ xOfR2);
-        System.out.println("alt(16,13): " +  getGridAltitude((int)x1, (int)z2));
-        System.out.println("alt(16,12): " +  getGridAltitude((int)x1, (int)z1));
-        System.out.println("alt(17,12): " +  getGridAltitude((int)x2, (int)z1));
-        
         
         //grid made of 2 triangles is made of (x1, z1)---(x2, z1)
         //                                    |                 |
@@ -149,8 +143,6 @@ public class Terrain {
         if (inside(x1, z2, x2, z1, x1, z1, x, z)){
         	float alt1 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x1, (int)z1));
         	float alt2 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x2, (int)z1));
-        	System.out.println("alt1: " +  alt1);
-        	System.out.println("alt2: " +  alt2);
         	altitude = bilinearInterpolation(x, x1, xOfR2, alt1, alt2);
         }else{
         
@@ -263,8 +255,11 @@ public class Terrain {
     }
     
     //prints altitude
-    public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(0.5f, 1));
+    public void printAltitude(GL3 gl){
+    	System.out.println(Arrays.deepToString(this.altitudes));
+    	System.out.println(this.altitude(5, 4));
+    	System.out.println(this.width);
+    	System.out.println(this.depth);
     }
 
 }

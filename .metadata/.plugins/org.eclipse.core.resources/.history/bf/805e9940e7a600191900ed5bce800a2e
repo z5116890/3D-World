@@ -55,7 +55,6 @@ public class World extends Application3D implements MouseListener, KeyListener{
      */
     public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
-        terrain.printAltitude();
         World world = new World(terrain);
         world.start();
     }

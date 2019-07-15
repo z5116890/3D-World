@@ -264,7 +264,7 @@ public class Terrain {
     
     //prints altitude
     public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(0.5f, 1));
+    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(16.3f, 12.4f));
     }
 
 }

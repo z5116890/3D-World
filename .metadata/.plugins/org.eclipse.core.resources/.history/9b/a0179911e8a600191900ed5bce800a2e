@@ -126,8 +126,8 @@ public class Terrain {
         float xOfR2 = (float) (x2 - (z - Math.floor(z)));
         
         System.out.println("x: "+ x + " x1: "+ x1 +" x2: "+ x2 +" z: "+ z +" z1: "+ z1 +" z2: "+ z2 + " xhypotenuse: "+ xOfR2);
-        System.out.println("alt(16,13): " +  getGridAltitude((int)x1, (int)z2));
-        System.out.println("alt(16,12): " +  getGridAltitude((int)x1, (int)z1));
+        System.out.println("alt(16,12): " +  getGridAltitude((int)x1, (int)z2));
+        System.out.println("alt(16,13): " +  getGridAltitude((int)x1, (int)z1));
         System.out.println("alt(17,12): " +  getGridAltitude((int)x2, (int)z1));
         
         
@@ -264,7 +264,7 @@ public class Terrain {
     
     //prints altitude
     public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(0.5f, 1));
+    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(16.3f, 12.4f));
     }
 
 }
