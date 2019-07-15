@@ -148,7 +148,7 @@ public class Terrain {
       // Calculate area of triangle 3 with given point as one of the vertices.
         double A3 = area (x1, y1, x2, y2, x, y); 
          
-       // Check if sum of triangles 1,2 and 3 is same as total area of trianlge
+       // Check if sum of A1, A2 and A3 is same as A 
         return (A == A1 + A2 + A3); 
     
     }

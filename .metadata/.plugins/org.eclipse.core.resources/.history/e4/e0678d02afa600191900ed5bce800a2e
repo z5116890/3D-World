@@ -125,35 +125,8 @@ public class Terrain {
         //                                    |                 |
         //      							  |                 |
         //									  (x1, z2)---(x2, z2)
-        
-        
         return altitude;
     }
-    
-    public double area(int x1, int z1, int x2, int z2, int x3, int z3) { 
-    	return Math.abs((x1*(z2-z3) + x2*(z3-z1)+ x3*(z1-z2))/2.0); 
-    } 
-    
-    //given a point and 3 points of triangle, check to see if point lies inside triangle by calculating area.
-    public boolean inside(int x1, int y1, int x2,int y2, int x3, int y3, int x, int y){
-    	// Calculate total area of triangle 
-        double A = area (x1, y1, x2, y2, x3, y3); 
-       
-       // Calculate area of triangle 1 with given point as one of the vertices.
-        double A1 = area (x, y, x2, y2, x3, y3); 
-       
-       // Calculate area of triangle 2 with given point as one of the vertices.
-        double A2 = area (x1, y1, x, y, x3, y3); 
-       
-      // Calculate area of triangle 3 with given point as one of the vertices.
-        double A3 = area (x1, y1, x2, y2, x, y); 
-         
-       // Check if sum of triangles 1,2 and 3 is same as total area of trianlge
-        return (A == A1 + A2 + A3); 
-    
-    }
-    
-    
 
     /**
      * Add a tree at the specified (x,z) point. 
