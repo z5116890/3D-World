@@ -175,13 +175,10 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	    if (key == KeyEvent.VK_DOWN) {
 	    	posY -= 1;
 	    }
-	    
-	    //zoom in
 	    if (key == KeyEvent.VK_X) {
 	    	posZ += 1;
 	    }
-	    
-	    //zoom out
+
 	    if (key == KeyEvent.VK_Z) {
 	    	posZ -= 1;
 	    }
