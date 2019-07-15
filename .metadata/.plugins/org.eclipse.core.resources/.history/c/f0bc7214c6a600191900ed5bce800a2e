@@ -123,7 +123,6 @@ public class Terrain {
         //z towards positive
         int z2 = (int) Math.ceil(x);
         
-        float xOfR2 = (float) (x2 - (z - Math.floor(z)));
         
         //grid made of 2 triangles is made of (x1, z1)---(x2, z1)
         //                                    |                 |
@@ -139,24 +138,25 @@ public class Terrain {
         	return (float) (((x - x1) / (x2 - x1)) * getGridAltitude((int)x2, (int)z) + ((x2 - x) / (x2 - x1)) * getGridAltitude((int)x1, (int)z));
         }
         
+        float xOfR2 = (float) (x2 - (z - Math.floor(z)));
         //if point is inside left triangle
         if (inside(x1, z2, x2, z1, x1, z1, x, z)){
         	float alt1 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x1, (int)z1));
         	float alt2 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x2, (int)z1));
-        	altitude = bilinearInterpolation(x, x1, xOfR2, alt1, alt2);
+        	return bilinearInterpolation(double x, double x1, double x2, double alt1, double alt2);
         }else{
         
         //else point is inside right triangle
 	        float alt1 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x2, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x2, (int)z1));
 	    	float alt2 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x2, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2));
-	        altitude = bilinearInterpolation(x, xOfR2, x2, alt1, alt2);
+	        altitude = bilinearInterpolation(double x, double x1, double x2, double alt1, double alt2);
         }
         return altitude;
     }
     
     public float bilinearInterpolation(double x, double x1, double x2, double alt1, double alt2){
-    	return (float) (((x - x1) / (x2 - x1)) * alt2 +
-    		      ((x2 - x) / (x2 - x1)) * alt1);
+    	return (float) (((x - x1) / (x2 - x1)) * alt1 +
+    		      ((x2 - x) / (x2 - x1)) * alt2);
     	
     }
     
