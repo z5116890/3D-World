@@ -255,7 +255,7 @@ public class Terrain {
             }
         }
         System.out.println(indices);
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, false);
+        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
         terrain.init(gl);
         
         return terrain;
