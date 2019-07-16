@@ -38,7 +38,7 @@ public class ModelViewer extends Application3D {
 
     public ModelViewer() throws IOException {
         super("Model viewer", 600, 600);
-        model = new TriangleMesh("res/models/bunny.ply", true);
+        model = new TriangleMesh("res/models/tree.ply", true);
         base = new TriangleMesh("res/models/cube_normals.ply", true);
     }
 
@@ -98,13 +98,13 @@ public class ModelViewer extends Application3D {
 
                 // This translation and scale works well for the bunny and
                 // dragon1
-                .translate(0, -0.2f, 0).scale(5, 5, 5);
+//                .translate(0, -0.2f, 0).scale(5, 5, 5);
         // This scale works well for the apple
         // .scale(5, 5, 5);
         // This translation and scale works well for dragon2
 //         .translate(0,0.33f,0).scale(0.008f, 0.008f, 0.008f);
         // This translation and scale works well for the tree
-//           .translate(0,0.5f,0).scale(0.1f,0.1f,0.1f);
+           .translate(0,0.5f,0).scale(0.1f,0.1f,0.1f);
 
         Shader.setPenColor(gl, new Color(0.5f, 0.5f, 0.5f));
         model.draw(gl, modelFrame);

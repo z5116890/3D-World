@@ -3,6 +3,7 @@ package unsw.graphics.world;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -29,7 +30,7 @@ public class World extends Application3D implements MouseListener, KeyListener{
 
     private Terrain terrain;
     private TriangleMesh terrainMesh;
-    
+
     //data so we can drag around world
     private float rotateX = 0;
     private float rotateY = 0;
@@ -53,8 +54,11 @@ public class World extends Application3D implements MouseListener, KeyListener{
      * @throws FileNotFoundException
      * change run configurations
      */
-    public static void main(String[] args) throws FileNotFoundException {
-        Terrain terrain = LevelIO.load(new File(args[0]));
+    public static void main(String[] args) throws IOException {
+//    	use temporary json file
+		File tempForTest = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
+		Terrain terrain = LevelIO.load(tempForTest);
+//        Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
     }
@@ -68,16 +72,16 @@ public class World extends Application3D implements MouseListener, KeyListener{
                 .rotateY(rotateY);
 
 
-        Shader.setPenColor(gl, Color.BLACK);
+        Shader.setPenColor(gl, Color.PINK);
 		this.terrainMesh.draw(gl, frame);
-		
+		this.terrain.drawObjects(gl, frame);
 	}
 
 	@Override
 	public void destroy(GL3 gl) {
 		super.destroy(gl);
 		this.terrainMesh.destroy(gl);
-		
+		this.terrain.destroyObjects(gl);
 	}
 
 	@Override
@@ -104,7 +108,6 @@ public class World extends Application3D implements MouseListener, KeyListener{
         Shader.setFloat(gl, "phongExp", 16f);
         
 		this.terrainMesh = terrain.makeTerrain(gl);
-		
 	}
 
 	@Override
