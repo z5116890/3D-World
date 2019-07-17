@@ -8,12 +8,14 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
 import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Shader;
+import unsw.graphics.Texture;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -29,7 +31,9 @@ public class World extends Application3D implements MouseListener, KeyListener{
 
     private Terrain terrain;
     private TriangleMesh terrainMesh;
-    
+    private Texture myTextures[];
+    private String textureFileName1 = "res/Textures/grass.bmp";
+    private String textureExt2 = "bmp";
     //data so we can drag around world
     private float rotateX = 0;
     private float rotateY = 0;
@@ -69,6 +73,16 @@ public class World extends Application3D implements MouseListener, KeyListener{
                 .rotateY(rotateY);
 		Shader.setViewMatrix(gl, frame.getMatrix());
 		
+		//set texture
+		Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
+
+        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are 
+                                            // for the 0'th active texture
+        gl.glBindTexture(GL.GL_TEXTURE_2D,
+                myTextures[0].getId()); // Bind the texture id of the 
+                                                // texture we want to the 0th 
+                                                // active texture
+		
 
 	    //set sunlight direction
 		Point3D localSunlight = frame.transform(this.terrain.getSunlight().asPoint3D());
@@ -89,7 +103,7 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	    Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
 	    Shader.setFloat(gl, "phongExp", 16f);
     
-        Shader.setPenColor(gl, Color.GREEN);
+        Shader.setPenColor(gl, Color.WHITE);
 		this.terrainMesh.draw(gl, frame);
 		
 	}
@@ -98,6 +112,9 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	public void destroy(GL3 gl) {
 		super.destroy(gl);
 		this.terrainMesh.destroy(gl);
+		for (Texture t : myTextures)
+            t.destroy(gl);
+
 		
 	}
 
@@ -105,14 +122,18 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	public void init(GL3 gl) {
 		super.init(gl);
 		
-		Shader shader = new Shader(gl, "shaders/vertex_directional_light.glsl",
-                "shaders/fragment_directional_light.glsl");
+		//load textures
+		myTextures = new Texture[1];
+        myTextures[0] = new Texture(gl, textureFileName1, textureExt2, false);
+		
+		Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
+                "shaders/fragment_directional_tex.glsl");
 		shader.use(gl);
         getWindow().addMouseListener(this);
         getWindow().addKeyListener(this);
         
         
-		this.terrainMesh = terrain.makeTerrain(gl);
+		this.terrainMesh = terrain.makeTerrain(gl, myTextures[0]);
 		
 	}
 

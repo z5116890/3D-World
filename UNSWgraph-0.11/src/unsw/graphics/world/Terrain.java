@@ -10,6 +10,8 @@ import java.util.List;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
+import unsw.graphics.Point2DBuffer;
+import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -221,7 +223,7 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh makeTerrain(GL3 gl){
+    public TriangleMesh makeTerrain(GL3 gl, Texture texture){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         
@@ -231,6 +233,31 @@ public class Terrain {
             for(int j = 0; j < this.width; j++) {
                 vertices.add(new Point3D(j,this.altitudes[j][i], i));
             }
+        }
+        
+        Point2DBuffer texCoordBuffer = new Point2DBuffer(vertices.size());
+        
+        int x = 0; int a = 0; int b = 0;
+        for(int i = 0; i < vertices.size(); i++){
+        	if(x == 0){
+        		a = 0;
+        		b = 0;
+        		x++;
+        	}
+        	else if(x == 1){
+        		a = 1;
+        		x++;
+        	}
+        	else if(x == 2){
+        		b = 1;
+        		x++;
+        	}
+        	else if(x == 3){
+        		a = 0;
+        		x = 0;
+        	}
+        	System.out.println("a: " +a + "b: "+ b);
+        	texCoordBuffer.put(i, a, b);
         }
         
         //faces
@@ -255,7 +282,7 @@ public class Terrain {
             }
         }
         System.out.println(indices);
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, true);
+        TriangleMesh terrain = new TriangleMesh(vertices, indices, texCoordBuffer, true);
         terrain.init(gl);
         
         return terrain;
