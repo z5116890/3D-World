@@ -6,8 +6,8 @@ uniform vec4 input_color;
 uniform mat4 view_matrix;
 
 // Light properties
-// uniform vec3 lightPos;
-// uniform vec3 lightIntensity;
+uniform vec3 lightPos;
+uniform vec3 lightIntensity;
 uniform vec3 ambientIntensity;
 uniform vec3 sunlightDirection;
 uniform vec3 sunlight;

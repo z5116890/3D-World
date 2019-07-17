@@ -88,7 +88,6 @@ public class World extends Application3D implements MouseListener, KeyListener{
 		
 	}
 	
-	//set lighting properties for terrain
 	public void setTerrainProperties(GL3 gl, CoordFrame3D frame){
 		//set sunlight direction
 		Point3D localSunlight = frame.transform(this.terrain.getSunlight().asPoint3D());
