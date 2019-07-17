@@ -2,6 +2,7 @@ package unsw.graphics.world;
 
 
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import unsw.graphics.geometry.TriangleMesh;
 
 
 /**
- * COMMENT: Comment HeightMap 
+ * COMMENT: Comment HeightMap
  *
  * @author malcolmr
  */
@@ -32,7 +33,7 @@ public class Terrain {
     private List<Tree> trees;
     private List<Road> roads;
     private Vector3 sunlight;
-    
+
 
     /**
      * Create a new terrain
@@ -62,21 +63,21 @@ public class Terrain {
     }
 
     /**
-     * Set the sunlight direction. 
-     * 
+     * Set the sunlight direction.
+     *
      * Note: the sun should be treated as a directional light, without a position
-     * 
+     *
      * @param dx
      * @param dy
      * @param dz
      */
     public void setSunlightDir(float dx, float dy, float dz) {
-        sunlight = new Vector3(dx, dy, dz);      
+        sunlight = new Vector3(dx, dy, dz);
     }
 
     /**
      * Get the altitude at a grid point
-     * 
+     *
      * @param x
      * @param z
      * @return
@@ -87,7 +88,7 @@ public class Terrain {
 
     /**
      * Set the altitude at a grid point
-     * 
+     *
      * @param x
      * @param z
      * @return
@@ -97,25 +98,24 @@ public class Terrain {
     }
 
     /**
-     * Get the altitude at an arbitrary point. 
+     * Get the altitude at an arbitrary point.
      * Non-integer points should be interpolated from neighbouring grid points
-     * 
+     *
      * @param x
      * @param z
      * @return
      */
-    public float altitude(float x, float z) {
-        float altitude = 0;
+    public float computeAltitude(float x, float z){
 
-        // TODO: Implement this
+        //grid made of 2 triangles is made of (x1, z1)---(x2, z1)
+        //                                    |                 |
+        //                                    | .(x,z)          |
+        //      							  |                 |
+        //									  (x1, z2)---(x2, z2)
         //next array corresponds to z
         //next element corresponds to x
         //y corresponds to altitude
-        
-        //if x and z are existing elements
-        if(x == Math.ceil(x) && z == Math.ceil(z)){
-        	return this.altitudes[(int) x][(int) z];
-        }
+
         //x left
         int x1 = (int) Math.floor(x);
         //x right
@@ -124,119 +124,120 @@ public class Terrain {
         int z1 = (int) Math.floor(z);
         //z towards positive
         int z2 = (int) Math.ceil(z);
-        
-        float xOfR2 = (float) (x2 - (z - Math.floor(z)));
-        
-        System.out.println("x: "+ x + " x1: "+ x1 +" x2: "+ x2 +" z: "+ z +" z1: "+ z1 +" z2: "+ z2 + " xhypotenuse: "+ xOfR2);
-        System.out.println("alt(16,13): " +  getGridAltitude((int)x1, (int)z2));
-        System.out.println("alt(16,12): " +  getGridAltitude((int)x1, (int)z1));
-        System.out.println("alt(17,12): " +  getGridAltitude((int)x2, (int)z1));
-        
-        
-        //grid made of 2 triangles is made of (x1, z1)---(x2, z1)
-        //                                    |                 |
-        //                                    | .(x,z)          |
-        //      							  |                 |
-        //									  (x1, z2)---(x2, z2)
-        
-        
-        //if point is either on x or z line
-        if(x == Math.ceil(x)){
-        	return (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x, (int)z1));
-        }else if(z == Math.ceil(x)){
-        	return (float) (((x - x1) / (x2 - x1)) * getGridAltitude((int)x2, (int)z) + ((x2 - x) / (x2 - x1)) * getGridAltitude((int)x1, (int)z));
+
+        int xMax = this.altitudes[0].length-1;
+        int zMax = this.altitudes[1].length-1;
+        if(x<0 || z<0 || x >= xMax || z >= zMax){
+            //if x or z is not valid
+            return 0;
         }
-        
-        //if point is inside left triangle
-        if (inside(x1, z2, x2, z1, x1, z1, x, z)){
-        	float alt1 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x1, (int)z1));
-        	float alt2 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x2, (int)z1));
-        	System.out.println("alt1: " +  alt1);
-        	System.out.println("alt2: " +  alt2);
-        	altitude = bilinearInterpolation(x, x1, xOfR2, alt1, alt2);
-        }else{
-        
-        //else point is inside right triangle
-	        float alt1 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x2, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x2, (int)z1));
-	    	float alt2 = (float) (((z - z1) / (z2 - z1)) * getGridAltitude((int)x2, (int)z2) + ((z2 - z) / (z2 - z1)) * getGridAltitude((int)x1, (int)z2));
-	        altitude = bilinearInterpolation(x, xOfR2, x2, alt1, alt2);
+        //if x and z are existing elements
+        if(x == Math.ceil(x) && z == Math.ceil(z)){
+            return this.altitudes[(int) x][(int) z];
         }
-        return altitude;
+        //if target point is on x or z line
+        if(x == Math.round(x)){
+            return bilinearInterpolation(z, z1, z2, getGridAltitude(Math.round(x), z1), getGridAltitude(Math.round(x), z2));
+        }
+        if(z == Math.round(z)){
+            return bilinearInterpolation(x, x1, x2, getGridAltitude(x1, Math.round(z)), getGridAltitude(x2, Math.round(z)));
+        }
+
+        float xOfR2 = findX(x1,z2,x2,z1,z);
+        //if target point is on the middle line
+        if(xOfR2 == x) {
+            return bilinearInterpolation(z, z2, z1, getGridAltitude(x1,z2), getGridAltitude(x2, z1));
+        }
+        if(inside(x1,z1,x2,z1,x1,z2,x,z)) {
+            float fr1 = bilinearInterpolation(z, z2, z1, getGridAltitude(x1,z2), getGridAltitude(x1, z1));
+            float fr2 = bilinearInterpolation(z, z2, z1, getGridAltitude(x1,z2), getGridAltitude(x2, z1));
+            return bilinearInterpolation(x, findX(x1,z1,x1,z2,z), xOfR2,fr1, fr2);
+        }
+        else{
+            float fr1 = bilinearInterpolation(z, z1, z2, getGridAltitude(x2,z1), getGridAltitude(x2, z2));
+            float fr2 = bilinearInterpolation(z, z1, z2, getGridAltitude(x2,z1), getGridAltitude(x1, z2));
+            return bilinearInterpolation(x, findX(x2,z1,x2,z2,z), xOfR2,fr1, fr2);
+        }
     }
-    
-    public float bilinearInterpolation(double x, double x1, double x2, double alt1, double alt2){
+    private float findX(int x1,int z1, int x2, int z2, float z){
+        float k = ((float)z1-(float)z2)/((float)x1-(float)x2);
+        float b = (float)z2-k*(float)x2;
+        return (z-b)/k;
+    }
+    private float bilinearInterpolation(double x, double x1, double x2, double alt1, double alt2){
     	return (float) (((x - x1) / (x2 - x1)) * alt2 +
     		      ((x2 - x) / (x2 - x1)) * alt1);
-    	
+
     }
-    
-    
-    public double area(float x1, float z1, float x2, float z2, float x3, float z3) { 
-    	return Math.abs((x1*(z2-z3) + x2*(z3-z1)+ x3*(z1-z2))/2.0); 
-    } 
-    
+
+
+    private double area(float x1, float z1, float x2, float z2, float x3, float z3) {
+    	return Math.abs((x1*(z2-z3) + x2*(z3-z1)+ x3*(z1-z2))/2.0);
+    }
+
     //given a point and 3 points of triangle, check to see if point lies inside triangle by calculating area.
-    public boolean inside(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y){
-    	// Calculate total area of triangle 
-        double A = area (x1, y1, x2, y2, x3, y3); 
-       
+    private boolean inside(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y){
+    	// Calculate total area of triangle
+        double A = area (x1, y1, x2, y2, x3, y3);
+
        // Calculate area of triangle 1 with given point as one of the vertices.
-        double A1 = area (x, y, x2, y2, x3, y3); 
-       
+        double A1 = area (x, y, x2, y2, x3, y3);
+
        // Calculate area of triangle 2 with given point as one of the vertices.
-        double A2 = area (x1, y1, x, y, x3, y3); 
-       
+        double A2 = area (x1, y1, x, y, x3, y3);
+
       // Calculate area of triangle 3 with given point as one of the vertices.
-        double A3 = area (x1, y1, x2, y2, x, y); 
-         
+        double A3 = area (x1, y1, x2, y2, x, y);
+
        // Check if sum of triangles 1,2 and 3 is same as total area of trianlge
-        return (A == A1 + A2 + A3); 
-    
+        return (A == A1 + A2 + A3);
+
     }
-    
-    
+
+
 
     /**
-     * Add a tree at the specified (x,z) point. 
+     * Add a tree at the specified (x,z) point.
      * The tree's y coordinate is calculated from the altitude of the terrain at that point.
-     * 
+     *
      * @param x
      * @param z
      */
-    public void addTree(float x, float z) {
-        float y = altitude(x, z);
+    public void addTree(float x, float z) throws IOException {
+        float y = computeAltitude(x, z);
+        System.out.println("cur x "+x+" cur y "+ y+ " cur z "+ z);
         Tree tree = new Tree(x, y, z);
         trees.add(tree);
     }
 
 
     /**
-     * Add a road. 
-     * 
+     * Add a road.
+     *
      * @param x
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
         Road road = new Road(width, spine);
-        roads.add(road);        
+        roads.add(road);
     }
-    
-    
+
+
     //compute points from 2d array altitude
     public TriangleMesh makeTerrain(GL3 gl, Texture texture){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
-        
-        
+
+
         //vertices
         for(int i = 0; i < this.depth; i++) {
             for(int j = 0; j < this.width; j++) {
                 vertices.add(new Point3D(j,this.altitudes[j][i], i));
             }
         }
-        
+
         Point2DBuffer texCoordBuffer = new Point2DBuffer(vertices.size());
-        
+
         int x = 0; int a = 0; int b = 0;
         for(int i = 0; i < vertices.size(); i++){
         	if(x == 0){
@@ -259,7 +260,7 @@ public class Terrain {
         	System.out.println("a: " +a + "b: "+ b);
         	texCoordBuffer.put(i, a, b);
         }
-        
+
         //faces
         for(int i = 1; i < this.width; i++){
         	//first triangle of quad
@@ -284,14 +285,32 @@ public class Terrain {
         System.out.println(indices);
         TriangleMesh terrain = new TriangleMesh(vertices, indices, texCoordBuffer, true);
         terrain.init(gl);
-        
+        this.makeTrees(gl);
         return terrain;
-        
-    }
-    
-    //prints altitude
-    public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.altitude(0.5f, 1));
+
     }
 
+    //prints altitude
+    public void printAltitude(GL3 gl){
+    	System.out.println(Arrays.deepToString(this.altitudes));
+    	System.out.println(this.computeAltitude(5, 4));
+    	System.out.println(this.width);
+    	System.out.println(this.depth);
+    }
+
+    private void makeTrees(GL3 gl){
+        for(Tree curTree : this.trees){
+            curTree.init(gl);
+        }
+    }
+    public void drawObjects(GL3 gl, CoordFrame3D frame){
+        for(Tree curTree : this.trees){
+            curTree.drawSelf(gl, frame);
+        }
+    }
+    public void destroyObjects(GL3 gl){
+        for(Tree curTree : this.trees){
+            curTree.destroy(gl);
+        }
+    }
 }

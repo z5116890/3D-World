@@ -3,6 +3,7 @@ package unsw.graphics.world;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -23,7 +24,7 @@ import unsw.graphics.geometry.TriangleMesh;
 
 
 /**
- * COMMENT: Comment Game 
+ * COMMENT: Comment Game
  *
  * @author malcolmr
  */
@@ -42,17 +43,17 @@ public class World extends Application3D implements MouseListener, KeyListener{
     private float posZ = -6;
     private Point2D myMousePoint = null;
     private static final int ROTATION_SCALE = 1;
-    
-    
+
+
     public World(Terrain terrain) {
     	super("Assignment 2", 800, 600);
         this.terrain = terrain;
-   
+
     }
-   
+
     /**
      * Load a level file and display it.
-     * 
+     *
      * @param args - The first argument is a level file in JSON format
      * @throws FileNotFoundException
      * change run configurations
@@ -72,41 +73,41 @@ public class World extends Application3D implements MouseListener, KeyListener{
                 .rotateX(rotateX)
                 .rotateY(rotateY);
 		Shader.setViewMatrix(gl, frame.getMatrix());
-		
+
 		//set texture
 		Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
 
-        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are 
+        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are
                                             // for the 0'th active texture
         gl.glBindTexture(GL.GL_TEXTURE_2D,
-                myTexture.getId()); // Bind the texture id of the 
-                                                // texture we want to the 0th 
+                myTexture.getId()); // Bind the texture id of the
+                                                // texture we want to the 0th
                                                 // active texture
 		this.setTerrainProperties(gl, frame);
 
 		this.terrainMesh.draw(gl, frame);
-		
+		this.terrain.drawObjects(gl, frame);
 	}
-	
+
 	//set lighting properties for terrain
 	public void setTerrainProperties(GL3 gl, CoordFrame3D frame){
 		//set sunlight direction
 		Point3D localSunlight = frame.transform(this.terrain.getSunlight().asPoint3D());
-	    Shader.setPoint3D(gl, "sunlightDirection", localSunlight); 
+	    Shader.setPoint3D(gl, "sunlightDirection", localSunlight);
 	    Shader.setColor(gl, "sunlight", Color.WHITE);
-	    
+
 	    // Set the lighting properties
 	    //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
 	   //Shader.setColor(gl, "lightIntensity", Color.WHITE);
 	    Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
-	
+
 	    // Set the material properties
 	    Shader.setColor(gl, "ambientCoeff", Color.WHITE);
 	    Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
 	    //no specular for grass
 	    Shader.setColor(gl, "specularCoeff", new Color(0, 0, 0));
 	    Shader.setFloat(gl, "phongExp", 16f);
-    
+
         Shader.setPenColor(gl, Color.WHITE);
 	}
 
@@ -116,25 +117,25 @@ public class World extends Application3D implements MouseListener, KeyListener{
 		this.terrainMesh.destroy(gl);
 		myTexture.destroy(gl);
 
-		
+
 	}
 
 	@Override
 	public void init(GL3 gl) {
 		super.init(gl);
-		
+
 		//load textures
         myTexture = new Texture(gl, textureFilename, textureExtension, false);
-		
+
 		Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
                 "shaders/fragment_directional_tex.glsl");
 		shader.use(gl);
         getWindow().addMouseListener(this);
         getWindow().addKeyListener(this);
-        
-        
+
+
 		this.terrainMesh = terrain.makeTerrain(gl, myTexture);
-		
+
 	}
 
 	@Override
@@ -142,7 +143,7 @@ public class World extends Application3D implements MouseListener, KeyListener{
         super.reshape(gl, width, height);
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		 myMousePoint = new Point2D(e.getX(), e.getY());
@@ -183,7 +184,7 @@ public class World extends Application3D implements MouseListener, KeyListener{
         myMousePoint = p;
 	}
 
-    //helps to zoom in and out 
+    //helps to zoom in and out
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -205,12 +206,12 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	    if (key == KeyEvent.VK_DOWN) {
 	    	posY -= 1;
 	    }
-	    
+
 	    //zoom in
 	    if (key == KeyEvent.VK_X) {
 	    	posZ += 1;
 	    }
-	    
+
 	    //zoom out
 	    if (key == KeyEvent.VK_Z) {
 	    	posZ -= 1;
@@ -220,8 +221,8 @@ public class World extends Application3D implements MouseListener, KeyListener{
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-    
+
 }
