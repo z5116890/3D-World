@@ -17,7 +17,7 @@ public class WorldCamera implements KeyListener {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
         myAngle = 0;
         myTerrain = terrain;
-        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1, 0);
+        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 4);
     }
 
     public void setView(GL3 gl) {
@@ -43,11 +43,13 @@ public class WorldCamera implements KeyListener {
                 myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 break;
         }
-        if (-myPos.getX() >= 0 && -myPos.getX() <= myTerrain.getWidth() - 1 && -myPos.getZ() >= 0 && -myPos.getZ() <= myTerrain.getDepth() - 1) {
-            myPos = new Point3D(myPos.getX(), (float) -myTerrain.getGridAltitude(Math.round(-myPos.getX()), Math.round(-myPos.getZ())), myPos.getZ());
-        }
+        System.out.println("BEFORE:");
+        System.out.println("x: "+myPos.getX());
+        System.out.println("y: "+myPos.getY());
+        System.out.println("z: "+myPos.getZ());
+        myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
-        viewFrame = viewFrame.translate(myPos).translate(0, -1, 0);
+        viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 4);
 
     }
 

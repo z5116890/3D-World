@@ -11,6 +11,8 @@ import java.util.List;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.CoordFrame3D;
+import unsw.graphics.Point2DBuffer;
+import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
@@ -117,6 +119,9 @@ public class Terrain {
         //next element corresponds to x
         //y corresponds to altitude
 
+        if (x < 0 || x > width - 1 || z < 0 || z > depth - 1){
+            return 0;
+        }
         //x left
         int x1 = (int) Math.floor(x);
         //x right
@@ -126,12 +131,7 @@ public class Terrain {
         //z towards positive
         int z2 = (int) Math.ceil(z);
 
-        int xMax = this.altitudes[0].length-1;
-        int zMax = this.altitudes[1].length-1;
-        if(x<0 || z<0 || x >= xMax || z >= zMax){
-            //if x or z is not valid
-            return 0;
-        }
+
         //if x and z are existing elements
         if(x == Math.ceil(x) && z == Math.ceil(z)){
             return this.altitudes[(int) x][(int) z];
@@ -161,6 +161,9 @@ public class Terrain {
         }
     }
     private float findX(int x1,int z1, int x2, int z2, float z){
+        if(x1==x2){
+            return x1;
+        }
         float k = ((float)z1-(float)z2)/((float)x1-(float)x2);
         float b = (float)z2-k*(float)x2;
         return (z-b)/k;
@@ -224,7 +227,7 @@ public class Terrain {
     
     
     //compute points from 2d array altitude
-    public TriangleMesh makeTerrain(GL3 gl){
+    public TriangleMesh makeTerrain(GL3 gl, Texture texture){
         List<Point3D> vertices = new ArrayList<Point3D>();
         List<Integer> indices = new ArrayList<Integer>();
         
@@ -236,6 +239,31 @@ public class Terrain {
             }
         }
         
+        Point2DBuffer texCoordBuffer = new Point2DBuffer(vertices.size());
+
+        int x = 0; int a = 0; int b = 0;
+        for(int i = 0; i < vertices.size(); i++){
+        	if(x == 0){
+        		a = 0;
+        		b = 0;
+        		x++;
+        	}
+        	else if(x == 1){
+        		a = 1;
+        		x++;
+        	}
+        	else if(x == 2){
+        		b = 1;
+        		x++;
+        	}
+        	else if(x == 3){
+        		a = 0;
+        		x = 0;
+        	}
+        	System.out.println("a: " +a + "b: "+ b);
+        	texCoordBuffer.put(i, a, b);
+        }
+
         //faces
         for(int i = 1; i < this.width; i++){
         	//first triangle of quad
@@ -258,7 +286,7 @@ public class Terrain {
             }
         }
         System.out.println(indices);
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, false);
+        TriangleMesh terrain = new TriangleMesh(vertices, indices, texCoordBuffer, true);
         terrain.init(gl);
         this.makeTrees(gl);
         return terrain;
@@ -266,11 +294,8 @@ public class Terrain {
     }
     
     //prints altitude
-    public void printAltitude(GL3 gl){
-    	System.out.println(Arrays.deepToString(this.altitudes));
-    	System.out.println(this.computeAltitude(5, 4));
-    	System.out.println(this.width);
-    	System.out.println(this.depth);
+    public void printAltitude(){
+    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.computeAltitude(0.5f, 1));
     }
 
     private void makeTrees(GL3 gl){

@@ -9,13 +9,14 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.*;
+import unsw.graphics.Texture;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
-
 
 
 /**
@@ -23,180 +24,213 @@ import unsw.graphics.geometry.TriangleMesh;
  *
  * @author malcolmr
  */
-public class World extends Application3D implements MouseListener, KeyListener{
+public class World extends Application3D implements MouseListener, KeyListener {
 
-	private Terrain terrain;
-	private TriangleMesh terrainMesh;
-	private WorldCamera myCamera;
+    private Terrain terrain;
+    private TriangleMesh terrainMesh;
+    private WorldCamera myCamera;
+    private Texture myTexture;
+    private String textureFilename = "res/Textures/grass.bmp";
+    private String textureExtension = "bmp";
 
-	//data so we can drag around world
-	private float rotateX = 0;
-	private float rotateY = 0;
-	private float posX = 0;
-	private float posY = 0;
-	private float posZ = -4;
-	private Point2D myMousePoint = null;
-	private static final int ROTATION_SCALE = 1;
-
-
-	public World(Terrain terrain) {
-		super("Assignment 2", 800, 600);
-		this.terrain = terrain;
-
-	}
-
-	/**
-	 * Load a level file and display it.
-	 *
-	 * @param args - The first argument is a level file in JSON format
-	 * @throws FileNotFoundException
-	 * change run configurations
-	 */
-	public static void main(String[] args) throws IOException {
-////    	use temporary json file
-//		File tempForTest = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test1.json");
-//		Terrain terrain = LevelIO.load(tempForTest);
-        Terrain terrain = LevelIO.load(new File(args[0]));
-		World world = new World(terrain);
-		world.start();
-	}
-
-	@Override
-	public void display(GL3 gl) {
-		super.display(gl);
-		CoordFrame3D frame = CoordFrame3D.identity()
-				.translate(posX, posY, posZ)
-				.rotateX(rotateX)
-				.rotateY(rotateY);
-
-		Shader.setPenColor(gl, Color.PINK);
-		this.myCamera.setView(gl);
-		this.terrainMesh.draw(gl, frame);
-		this.terrain.drawObjects(gl, frame);
-
-	}
-
-	@Override
-	public void destroy(GL3 gl) {
-		super.destroy(gl);
-		this.terrainMesh.destroy(gl);
-		this.terrain.destroyObjects(gl);
-	}
-
-	@Override
-	public void init(GL3 gl) {
-		super.init(gl);
+    //data so we can drag around world
+    private float rotateX = 0;
+    private float rotateY = 0;
+    private float posX = 0;
+    private float posY = 0;
+    private float posZ = -4;
+    private Point2D myMousePoint = null;
+    private static final int ROTATION_SCALE = 1;
 
 
-		getWindow().addMouseListener(this);
-//		getWindow().addKeyListener(this);
+    public World(Terrain terrain) {
+        super("Assignment 2", 800, 600);
+        this.terrain = terrain;
 
-		Shader shader = new Shader(gl, "shaders/vertex_phong.glsl",
-				"shaders/fragment_phong.glsl");
-		shader.use(gl);
+    }
 
-		// Set the lighting properties
-		Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
-		Shader.setColor(gl, "lightIntensity", Color.WHITE);
-		Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+    /**
+     * Load a level file and display it.
+     *
+     * @param args - The first argument is a level file in JSON format
+     * @throws FileNotFoundException change run configurations
+     */
+    public static void main(String[] args) throws IOException {
+        File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
+        Terrain terrain = LevelIO.load(temp);
+//        Terrain terrain = LevelIO.load(new File(args[0]));
+        terrain.printAltitude();
+        World world = new World(terrain);
+        world.start();
+    }
 
-		// Set the material properties
-		Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-		Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-		Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
-		Shader.setFloat(gl, "phongExp", 16f);
+    @Override
+    public void display(GL3 gl) {
+        super.display(gl);
+        CoordFrame3D frame = CoordFrame3D.identity()
+                .translate(posX, posY, posZ)
+                .rotateX(rotateX)
+                .rotateY(rotateY);
+        Shader.setViewMatrix(gl, frame.getMatrix());
 
-		this.terrainMesh = terrain.makeTerrain(gl);
-		this.myCamera = new WorldCamera(terrain);
-		getWindow().addKeyListener(myCamera);
+        //set texture
+        Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
 
-	}
+        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are
+        // for the 0'th active texture
+        gl.glBindTexture(GL.GL_TEXTURE_2D,
+                myTexture.getId()); // Bind the texture id of the
+        // texture we want to the 0th
+        // active texture
+        this.setTerrainProperties(gl, frame);
+        this.myCamera.setView(gl);
+        this.terrainMesh.draw(gl, frame);
+        this.terrain.drawObjects(gl, frame);
 
-	@Override
-	public void reshape(GL3 gl, int width, int height) {
-		super.reshape(gl, width, height);
-		Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
-	}
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		myMousePoint = new Point2D(e.getX(), e.getY());
-	}
+    //set lighting properties for terrain
+    public void setTerrainProperties(GL3 gl, CoordFrame3D frame) {
+        //set sunlight direction
+        Point3D localSunlight = frame.transform(this.terrain.getSunlight().asPoint3D());
+        Shader.setPoint3D(gl, "sunlightDirection", localSunlight);
+        Shader.setColor(gl, "sunlight", Color.WHITE);
 
-	@Override
-	public void mouseClicked(MouseEvent e) { }
+        // Set the lighting properties
+        //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+        //Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
 
-	@Override
-	public void mouseEntered(MouseEvent e) { }
+        // Set the material properties
+        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        //no specular for grass
+        Shader.setColor(gl, "specularCoeff", new Color(0, 0, 0));
+        Shader.setFloat(gl, "phongExp", 16f);
 
-	@Override
-	public void mouseExited(MouseEvent e) { }
+        Shader.setPenColor(gl, Color.WHITE);
+    }
 
-	@Override
-	public void mousePressed(MouseEvent e) { }
+    @Override
+    public void destroy(GL3 gl) {
+        super.destroy(gl);
+        this.terrainMesh.destroy(gl);
+        this.terrain.destroyObjects(gl);
+        myTexture.destroy(gl);
 
-	@Override
-	public void mouseReleased(MouseEvent e) { }
 
-	@Override
-	public void mouseWheelMoved(MouseEvent e) { }
+    }
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		Point2D p = new Point2D(e.getX(), e.getY());
+    @Override
+    public void init(GL3 gl) {
+        super.init(gl);
 
-		if (myMousePoint != null) {
-			float dx = p.getX() - myMousePoint.getX();
-			float dy = p.getY() - myMousePoint.getY();
+        //load textures
+        myTexture = new Texture(gl, textureFilename, textureExtension, false);
 
-			// Note: dragging in the x dir rotates about y
-			//       dragging in the y dir rotates about x
-			rotateY += dx * ROTATION_SCALE;
-			rotateX += dy * ROTATION_SCALE;
+        Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
+                "shaders/fragment_directional_tex.glsl");
+        shader.use(gl);
+        getWindow().addMouseListener(this);
+//        getWindow().addKeyListener(this);
 
-		}
-		myMousePoint = p;
-	}
 
-	//helps to zoom in and out
-	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		int key = e.getKeyCode();
+        this.terrainMesh = terrain.makeTerrain(gl, myTexture);
+        this.myCamera = new WorldCamera(terrain);
+        getWindow().addKeyListener(myCamera);
+    }
 
-		if (key == KeyEvent.VK_LEFT) {
-			posX -= 1;
-			System.out.println("hi");
-		}
+    @Override
+    public void reshape(GL3 gl, int width, int height) {
+        super.reshape(gl, width, height);
+        Shader.setProjMatrix(gl, Matrix4.perspective(60, width / (float) height, 1, 100));
+    }
 
-		if (key == KeyEvent.VK_RIGHT) {
-			posX += 1;
-		}
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        myMousePoint = new Point2D(e.getX(), e.getY());
+    }
 
-		if (key == KeyEvent.VK_UP) {
-			posY += 1;
-		}
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
 
-		if (key == KeyEvent.VK_DOWN) {
-			posY -= 1;
-		}
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
 
-		//zoom in
-		if (key == KeyEvent.VK_X) {
-			posZ += 1;
-		}
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
 
-		//zoom out
-		if (key == KeyEvent.VK_Z) {
-			posZ -= 1;
-		}
-	}
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
 
-	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
 
-	}
+    @Override
+    public void mouseWheelMoved(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        Point2D p = new Point2D(e.getX(), e.getY());
+
+        if (myMousePoint != null) {
+            float dx = p.getX() - myMousePoint.getX();
+            float dy = p.getY() - myMousePoint.getY();
+
+            // Note: dragging in the x dir rotates about y
+            //       dragging in the y dir rotates about x
+            rotateY += dx * ROTATION_SCALE;
+            rotateX += dy * ROTATION_SCALE;
+
+        }
+        myMousePoint = p;
+    }
+
+    //helps to zoom in and out
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // TODO Auto-generated method stub
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_LEFT) {
+            posX -= 1;
+            System.out.println("hi");
+        }
+
+        if (key == KeyEvent.VK_RIGHT) {
+            posX += 1;
+        }
+
+        if (key == KeyEvent.VK_UP) {
+            posY += 1;
+        }
+
+        if (key == KeyEvent.VK_DOWN) {
+            posY -= 1;
+        }
+
+        //zoom in
+        if (key == KeyEvent.VK_X) {
+            posZ += 1;
+        }
+
+        //zoom out
+        if (key == KeyEvent.VK_Z) {
+            posZ -= 1;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent arg0) {
+        // TODO Auto-generated method stub
+
+    }
 
 
 }
