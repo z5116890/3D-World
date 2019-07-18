@@ -55,9 +55,10 @@ public class World extends Application3D implements MouseListener, KeyListener{
      * Load a level file and display it.
      *
      * @param args - The first argument is a level file in JSON format
-     * @throws IOException 
+     * @throws FileNotFoundException
+     * change run configurations
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws FileNotFoundException {
         Terrain terrain = LevelIO.load(new File(args[0]));
         //terrain.printAltitude();
         World world = new World(terrain);

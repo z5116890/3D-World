@@ -10,5 +10,3 @@ INDEX VERSION 1.129+/Users/austinlam/Documents/GitHub/comp3421/.metadata/.plugin
 3290678919.index
 2711610662.index
 1643818310.index
-1626861633.index
-468849548.index
