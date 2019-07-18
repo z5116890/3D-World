@@ -12,11 +12,7 @@ import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
-import unsw.graphics.Application3D;
-import unsw.graphics.CoordFrame3D;
-import unsw.graphics.Matrix4;
-import unsw.graphics.Shader;
-import unsw.graphics.Texture;
+import unsw.graphics.*;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -35,6 +31,8 @@ public class World extends Application3D implements MouseListener, KeyListener{
     private Texture myTexture;
     private String textureFilename = "res/Textures/grass.bmp";
     private String textureExtension = "bmp";
+
+    private WorldCamera myCamera;
     //data so we can drag around world
     private float rotateX = 0;
     private float rotateY = 0;
@@ -55,7 +53,7 @@ public class World extends Application3D implements MouseListener, KeyListener{
      * Load a level file and display it.
      *
      * @param args - The first argument is a level file in JSON format
-     * @throws IOException 
+     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
@@ -83,9 +81,10 @@ public class World extends Application3D implements MouseListener, KeyListener{
                                                 // texture we want to the 0th
                                                 // active texture
 		this.setTerrainProperties(gl, frame);
-
+    this.myCamera.setView(gl);
 		this.terrainMesh.draw(gl, frame);
 		this.terrain.drawObjects(gl, frame);
+
 	}
 
 	//set lighting properties for terrain
@@ -125,97 +124,99 @@ public class World extends Application3D implements MouseListener, KeyListener{
 		super.init(gl);
 
 		//load textures
+
         myTexture = new Texture(gl, textureFilename, textureExtension, false);
 
 		Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
                 "shaders/fragment_directional_tex.glsl");
 		shader.use(gl);
         getWindow().addMouseListener(this);
-        getWindow().addKeyListener(this);
 
 
 		this.terrainMesh = terrain.makeTerrain(gl, myTexture);
+    this.myCamera = new WorldCamera(terrain);
+    getWindow().addKeyListener(myCamera);
 
 	}
 
 	@Override
 	public void reshape(GL3 gl, int width, int height) {
-        super.reshape(gl, width, height);
-        Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
+		super.reshape(gl, width, height);
+		Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		 myMousePoint = new Point2D(e.getX(), e.getY());
+		myMousePoint = new Point2D(e.getX(), e.getY());
 	}
 
-    @Override
-    public void mouseClicked(MouseEvent e) { }
+	@Override
+	public void mouseClicked(MouseEvent e) { }
 
-    @Override
-    public void mouseEntered(MouseEvent e) { }
+	@Override
+	public void mouseEntered(MouseEvent e) { }
 
-    @Override
-    public void mouseExited(MouseEvent e) { }
+	@Override
+	public void mouseExited(MouseEvent e) { }
 
-    @Override
-    public void mousePressed(MouseEvent e) { }
+	@Override
+	public void mousePressed(MouseEvent e) { }
 
-    @Override
-    public void mouseReleased(MouseEvent e) { }
+	@Override
+	public void mouseReleased(MouseEvent e) { }
 
-    @Override
-    public void mouseWheelMoved(MouseEvent e) { }
+	@Override
+	public void mouseWheelMoved(MouseEvent e) { }
 
-    @Override
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		Point2D p = new Point2D(e.getX(), e.getY());
 
-        if (myMousePoint != null) {
-            float dx = p.getX() - myMousePoint.getX();
-            float dy = p.getY() - myMousePoint.getY();
+		if (myMousePoint != null) {
+			float dx = p.getX() - myMousePoint.getX();
+			float dy = p.getY() - myMousePoint.getY();
 
-            // Note: dragging in the x dir rotates about y
-            //       dragging in the y dir rotates about x
-            rotateY += dx * ROTATION_SCALE;
-            rotateX += dy * ROTATION_SCALE;
+			// Note: dragging in the x dir rotates about y
+			//       dragging in the y dir rotates about x
+			rotateY += dx * ROTATION_SCALE;
+			rotateX += dy * ROTATION_SCALE;
 
-        }
-        myMousePoint = p;
+		}
+		myMousePoint = p;
 	}
 
-    //helps to zoom in and out
+	//helps to zoom in and out
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		int key = e.getKeyCode();
 
-	    if (key == KeyEvent.VK_LEFT) {
-	        posX -= 1;
-	        System.out.println("hi");
-	    }
+		if (key == KeyEvent.VK_LEFT) {
+			posX -= 1;
+			System.out.println("hi");
+		}
 
-	    if (key == KeyEvent.VK_RIGHT) {
-	        posX += 1;
-	    }
+		if (key == KeyEvent.VK_RIGHT) {
+			posX += 1;
+		}
 
-	    if (key == KeyEvent.VK_UP) {
-	    	posY += 1;
-	    }
+		if (key == KeyEvent.VK_UP) {
+			posY += 1;
+		}
 
-	    if (key == KeyEvent.VK_DOWN) {
-	    	posY -= 1;
-	    }
+		if (key == KeyEvent.VK_DOWN) {
+			posY -= 1;
+		}
 
-	    //zoom in
-	    if (key == KeyEvent.VK_X) {
-	    	posZ += 1;
-	    }
+		//zoom in
+		if (key == KeyEvent.VK_X) {
+			posZ += 1;
+		}
 
-	    //zoom out
-	    if (key == KeyEvent.VK_Z) {
-	    	posZ -= 1;
-	    }
+		//zoom out
+		if (key == KeyEvent.VK_Z) {
+			posZ -= 1;
+		}
 	}
 
 	@Override

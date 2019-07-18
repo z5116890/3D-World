@@ -62,6 +62,9 @@ public class Terrain {
         return sunlight;
     }
 
+    public int getWidth(){return width;}
+    public int getDepth(){return depth;}
+
     /**
      * Set the sunlight direction.
      *
@@ -205,7 +208,6 @@ public class Terrain {
      */
     public void addTree(float x, float z) throws IOException {
         float y = computeAltitude(x, z);
-        System.out.println("cur x "+x+" cur y "+ y+ " cur z "+ z);
         Tree tree = new Tree(x, y, z);
         trees.add(tree);
     }

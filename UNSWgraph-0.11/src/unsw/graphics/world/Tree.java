@@ -29,6 +29,7 @@ public class Tree extends TriangleMesh{
     }
 
     public void drawSelf(GL3 gl, CoordFrame3D frame) {
+        gl.glEnable(GL3.GL_CULL_FACE);
         Shader.setPenColor(gl, Color.GREEN);
         this.draw(gl, frame.translate(position).translate(0,0.5f,0).scale(0.1f,0.1f,0.1f));
     }
