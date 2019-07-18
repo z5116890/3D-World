@@ -17,7 +17,7 @@ public class WorldCamera implements KeyListener {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
         myAngle = 0;
         myTerrain = terrain;
-        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 4);
+        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 0);
     }
 
     public void setView(GL3 gl) {
@@ -49,7 +49,7 @@ public class WorldCamera implements KeyListener {
         System.out.println("z: "+myPos.getZ());
         myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
-        viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 4);
+        viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
 
     }
 
