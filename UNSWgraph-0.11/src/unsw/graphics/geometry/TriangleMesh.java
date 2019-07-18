@@ -22,8 +22,10 @@ import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
 
 import unsw.graphics.CoordFrame3D;
+import unsw.graphics.Point2DBuffer;
 import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
+import unsw.graphics.Texture;
 import unsw.graphics.Vector3;
 
 /**
@@ -48,6 +50,7 @@ public class TriangleMesh {
      * Contains the normals for all vertices.
      */
     private Point3DBuffer normals;
+    private Point2DBuffer textureCoord;
 
     /**
      * Contains indices into the buffer of vertices and normals. Each set of 3
@@ -69,6 +72,8 @@ public class TriangleMesh {
      * The name of the indices buffer according to OpenGL
      */
     private int indicesName;
+    
+    private int textureName;
 
     /**
      * Create a triangle mesh with the given lists of vertices, normals, and
@@ -102,6 +107,24 @@ public class TriangleMesh {
         }
     }
 
+    /**
+     * Create a triangle mesh with the given list of vertices and indices. The
+     * third argument indicates whether to generate vertex normals. If false,
+     * no normals are generated.
+     * @param vertices
+     * @param indices
+     * @param vertexNormals
+     */
+    public TriangleMesh(List<Point3D> vertices, List<Integer> indices, Point2DBuffer textureCoord, boolean vertexNormals) {
+        this.vertices = new Point3DBuffer(vertices);
+        this.indices = GLBuffers.newDirectIntBuffer(ArrayUtils.toPrimitive(indices.toArray(new Integer[0])));
+        this.textureCoord = textureCoord;
+        normals = new Point3DBuffer(vertices.size());
+        if (vertexNormals) {
+            computeVertexNormals();
+        }
+    }
+    
     /**
      * Create a triangle mesh with the given list of vertices (assumed to be in
      * the desired order for a triangle mesh). The second argument indicates
@@ -258,11 +281,12 @@ public class TriangleMesh {
 
     public void init(GL3 gl) {
         // Generate the names for the buffers.
-        int[] names = new int[3];
-        gl.glGenBuffers(3, names, 0);
+        int[] names = new int[4];
+        gl.glGenBuffers(4, names, 0);
         verticesName = names[0];
         indicesName = names[1];
         normalsName = names[2];
+        textureName = names[3];
 
         // Copy the data for the vertices
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
@@ -283,6 +307,14 @@ public class TriangleMesh {
             gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER,
                     indices.capacity() * Integer.BYTES, indices, GL.GL_STATIC_DRAW);
         }
+        
+        if (textureCoord != null) {
+        	gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, textureName);
+            gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER,
+                    textureCoord.capacity() * 2 * Float.BYTES, textureCoord.getBuffer(), GL.GL_STATIC_DRAW);
+        	
+        }
+        
     }
 
     public void draw(GL3 gl, CoordFrame3D frame) {
@@ -301,10 +333,15 @@ public class TriangleMesh {
         } else {
             gl.glDrawArrays(GL3.GL_TRIANGLES, 0, vertices.capacity());
         }
+        if (textureCoord != null) {
+        	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureName);
+            gl.glVertexAttribPointer(Shader.TEX_COORD, 2, GL.GL_FLOAT, false, 0, 0);
+            
+        }
     }
 
     public void destroy(GL3 gl) {
-        gl.glDeleteBuffers(3, new int[] { verticesName, indicesName, normalsName }, 0);
+        gl.glDeleteBuffers(3, new int[] { verticesName, indicesName, normalsName, textureName }, 0);
     }
 
     public void draw(GL3 gl) {
