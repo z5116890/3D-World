@@ -109,9 +109,9 @@ public class Terrain {
      * @return
      */
     public float computeAltitude(float x, float z){
-
+    	
     	System.out.println("x: " +x + " z: "+z);
-
+    	
     	if (x < 0 || x > this.width - 1 || z < 0 || z > this.depth - 1){
     		System.out.println("hi");
     	      return -1;
@@ -126,9 +126,6 @@ public class Terrain {
         //next element corresponds to x
         //y corresponds to altitude
 
-        if (x < 0 || x > width - 1 || z < 0 || z > depth - 1){
-            return 0;
-        }
         //x left
         int x1 = (int) Math.floor(x);
         //x right
@@ -138,7 +135,12 @@ public class Terrain {
         //z towards positive
         int z2 = (int) Math.ceil(z);
 
-
+        int xMax = this.altitudes[0].length-1;
+        int zMax = this.altitudes[1].length-1;
+        if(x<0 || z<0 || x >= xMax || z >= zMax){
+            //if x or z is not valid
+            return 0;
+        }
         //if x and z are existing elements
         if(x == Math.ceil(x) && z == Math.ceil(z)){
             return this.altitudes[(int) x][(int) z];
@@ -168,9 +170,6 @@ public class Terrain {
         }
     }
     private float findX(int x1,int z1, int x2, int z2, float z){
-        if(x1==x2){
-            return x1;
-        }
         float k = ((float)z1-(float)z2)/((float)x1-(float)x2);
         float b = (float)z2-k*(float)x2;
         return (z-b)/k;
@@ -301,8 +300,11 @@ public class Terrain {
     }
 
     //prints altitude
-    public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.computeAltitude(0.5f, 1));
+    public void printAltitude(GL3 gl){
+    	System.out.println(Arrays.deepToString(this.altitudes));
+    	System.out.println(this.computeAltitude(5, 4));
+    	System.out.println(this.width);
+    	System.out.println(this.depth);
     }
 
     private void makeTrees(GL3 gl){
