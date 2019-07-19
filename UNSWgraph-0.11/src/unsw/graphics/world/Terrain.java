@@ -272,7 +272,7 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
         this.setTerrainProperties(gl, frame);
         for(TriangleMesh curMesh : terrainMeshes){
-            curMesh.draw(gl);
+            curMesh.draw(gl, frame);
         }
         for(Tree curTree : this.trees){
             curTree.drawSelf(gl, frame);
