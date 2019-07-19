@@ -308,6 +308,7 @@ public class Terrain {
     private void makeTrees(GL3 gl){
         for(Tree curTree : this.trees){
             curTree.init(gl);
+            curTree.setTexture(gl);
         }
     }
     public void drawObjects(GL3 gl, CoordFrame3D frame){
