@@ -2,18 +2,17 @@ package unsw.graphics.world;
 
 
 
+import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
-import unsw.graphics.CoordFrame3D;
-import unsw.graphics.Point2DBuffer;
-import unsw.graphics.Texture;
-import unsw.graphics.Vector3;
+import unsw.graphics.*;
 import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -34,6 +33,11 @@ public class Terrain {
     private List<Road> roads;
     private Vector3 sunlight;
 
+    private Texture myTexture;
+    private String textureFilename = "res/Textures/grass.bmp";
+    private String textureExtension = "bmp";
+
+    private List<TriangleMesh> terrainMeshes;
 
     /**
      * Create a new terrain
@@ -48,6 +52,7 @@ public class Terrain {
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
         this.sunlight = sunlight;
+        terrainMeshes = new ArrayList<>();
     }
 
     public List<Tree> trees() {
@@ -109,9 +114,9 @@ public class Terrain {
      * @return
      */
     public float computeAltitude(float x, float z){
-    	
+
     	System.out.println("x: " +x + " z: "+z);
-    	
+
     	if (x < 0 || x > this.width - 1 || z < 0 || z > this.depth - 1){
     		System.out.println("hi");
     	      return -1;
@@ -233,70 +238,73 @@ public class Terrain {
 
 
     //compute points from 2d array altitude
-    public TriangleMesh makeTerrain(GL3 gl, Texture texture){
-        List<Point3D> vertices = new ArrayList<Point3D>();
-        List<Integer> indices = new ArrayList<Integer>();
-
-
-        //vertices
-        for(int i = 0; i < this.depth; i++) {
-            for(int j = 0; j < this.width; j++) {
-                vertices.add(new Point3D(j,this.altitudes[j][i], i));
+    public void makeTerrain(GL3 gl){
+        myTexture = new Texture(gl, textureFilename, textureExtension, false);
+        Point3D[][] terrain3D = new Point3D[width][depth];
+        List<Point2D> firstTriangle = new ArrayList<>();
+        firstTriangle.add(new Point2D(1, 1));
+        firstTriangle.add(new Point2D(0, 0));
+        firstTriangle.add(new Point2D(1, 0));
+        List<Point2D> SecTriangle = new ArrayList<>();
+        SecTriangle.add(new Point2D(1, 1));
+        SecTriangle.add(new Point2D(0, 1));
+        SecTriangle.add(new Point2D(0, 0));
+        for (int i=0; i<width; ++i) {
+            for (int j=0; j<depth; ++j) {
+                terrain3D[i][j] = new Point3D(i, altitudes[i][j], j);
             }
         }
-
-        Point2DBuffer texCoordBuffer = new Point2DBuffer(vertices.size());
-
-        int x = 0; int a = 0; int b = 0;
-        for(int i = 0; i < vertices.size(); i++){
-        	if(x == 0){
-        		a = 0;
-        		b = 0;
-        		x++;
-        	}
-        	else if(x == 1){
-        		a = 1;
-        		x++;
-        	}
-        	else if(x == 2){
-        		b = 1;
-        		x++;
-        	}
-        	else if(x == 3){
-        		a = 0;
-        		x = 0;
-        	}
-        	System.out.println("a: " +a + "b: "+ b);
-        	texCoordBuffer.put(i, a, b);
-        }
-
-        //faces
-        for(int i = 1; i < this.width; i++){
-        	//first triangle of quad
-        	int startTri1 = i * this.width;
-            int middleTri1 = startTri1 + 1;
-            int endTri1 = (i - 1) * this.width + 1;
-            //second triangle of quad
-            int startTri2 = (i - 1) * this.width + 1;
-            int middleTri2 = (i - 1) * this.width;
-            int endTri2 = i * this.width;
-            for(int j = 1; j < this.depth; j++) {
-            	//add points for 1st triangle
-	        	indices.add(startTri1++);
-	        	indices.add(middleTri1++);
-	        	indices.add(endTri1++);
-	        	//add points for 2 triangle to form quad
-	        	indices.add(startTri2++);
-	        	indices.add(middleTri2++);
-	        	indices.add(endTri2++);
+        for (int j=0; j<depth-1; ++j) {
+            for (int i=0; i<width-1; ++i) {
+                TriangleMesh first = new TriangleMesh(Arrays.asList(terrain3D[i+1][j], terrain3D[i][j+1], terrain3D[i+1][j+1]), true, firstTriangle);
+                first.init(gl);
+                terrainMeshes.add(first);
+                TriangleMesh second = new TriangleMesh(Arrays.asList(terrain3D[i+1][j], terrain3D[i][j], terrain3D[i][j+1]), true, SecTriangle);
+                second.init(gl);
+                terrainMeshes.add(second);
             }
         }
-        System.out.println(indices);
-        TriangleMesh terrain = new TriangleMesh(vertices, indices, texCoordBuffer, true);
-        terrain.init(gl);
         this.makeTrees(gl);
-        return terrain;
 
+    }
+    public void drawSelf(GL3 gl, CoordFrame3D frame){
+        //set texture
+        Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
+
+        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are
+        // for the 0'th active texture
+        gl.glBindTexture(GL.GL_TEXTURE_2D, myTexture.getId()); // Bind the texture id of the
+        // texture we want to the 0th active texture
+        Shader.setPenColor(gl, Color.WHITE);
+        this.setTerrainProperties(gl, frame);
+        for(TriangleMesh curMesh : terrainMeshes){
+            curMesh.draw(gl, frame);
+        }
+        for(Tree curTree : this.trees){
+            curTree.drawSelf(gl, frame);
+        }
+
+    }
+    //set lighting properties for terrain
+    private void setTerrainProperties(GL3 gl, CoordFrame3D frame) {
+        //set sunlight direction
+        Point3D localSunlight = frame.transform(this.getSunlight().asPoint3D());
+        Shader.setPoint3D(gl, "sunlightDirection", localSunlight);
+        Shader.setColor(gl, "sunlight", Color.WHITE);
+
+        // Set the lighting properties
+        //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
+        //Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+
+        // Set the material properties
+        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        //no specular for grass
+        Shader.setColor(gl, "specularCoeff", new Color(0, 0, 0));
+        Shader.setFloat(gl, "phongExp", 16f);
+
+        Shader.setPenColor(gl, Color.WHITE);
     }
 
     //prints altitude
@@ -318,6 +326,7 @@ public class Terrain {
         }
     }
     public void destroyObjects(GL3 gl){
+        myTexture.destroy(gl);
         for(Tree curTree : this.trees){
             curTree.destroy(gl);
         }
