@@ -43,10 +43,6 @@ public class WorldCamera implements KeyListener {
                 myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 break;
         }
-        System.out.println("BEFORE:");
-        System.out.println("x: "+myPos.getX());
-        System.out.println("y: "+myPos.getY());
-        System.out.println("z: "+myPos.getZ());
         myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
         viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);

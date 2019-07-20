@@ -48,7 +48,6 @@ public class World extends Application3D implements MouseListener, KeyListener {
      */
     public static void main(String[] args) throws IOException {
         Terrain terrain = LevelIO.load(new File(args[0]));
-        terrain.printAltitude();
         World world = new World(terrain);
         world.start();
     }
@@ -71,9 +70,7 @@ public class World extends Application3D implements MouseListener, KeyListener {
     @Override
     public void destroy(GL3 gl) {
         super.destroy(gl);
-//        this.terrainMesh.destroy(gl);
         this.terrain.destroyObjects(gl);
-//        myTexture.destroy(gl);
     }
 
     @Override
@@ -84,7 +81,6 @@ public class World extends Application3D implements MouseListener, KeyListener {
                 "shaders/fragment_directional_tex.glsl");
 
         getWindow().addMouseListener(this);
-//        getWindow().addKeyListener(this);
 
         terrain.makeTerrain(gl);
         this.myCamera = new WorldCamera(terrain);
@@ -152,7 +148,6 @@ public class World extends Application3D implements MouseListener, KeyListener {
 
         if (key == KeyEvent.VK_LEFT) {
             posX -= 1;
-            System.out.println("hi");
         }
 
         if (key == KeyEvent.VK_RIGHT) {

@@ -301,11 +301,6 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
     }
 
-    //prints altitude
-    public void printAltitude(){
-    	System.out.println("alt of x = 16.3, z = 12.4 is: " + this.computeAltitude(0.5f, 1));
-    }
-
     private void makeTrees(GL3 gl){
         for(Tree curTree : this.trees){
             curTree.init(gl);
