@@ -4,7 +4,6 @@ package unsw.graphics.world;
 
 import java.awt.*;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -307,11 +306,7 @@ public class Terrain {
             curTree.setTexture(gl);
         }
     }
-    public void drawObjects(GL3 gl, CoordFrame3D frame){
-        for(Tree curTree : this.trees){
-            curTree.drawSelf(gl, frame);
-        }
-    }
+
     public void destroyObjects(GL3 gl){
         myTexture.destroy(gl);
         for(Tree curTree : this.trees){

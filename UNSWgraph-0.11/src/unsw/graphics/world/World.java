@@ -17,6 +17,15 @@ import unsw.graphics.geometry.Point2D;
 /**
  * COMMENT: Comment Game
  *
+ * This project at this stage is able to show the terrain
+ * with trees based on the input level file, it is able
+ * to be controlled by mouse for rotation. It can also
+ * been controlled by keyboard direction keys to rotate
+ * through y-axis and move forward and backward
+ *
+ * Both the terrain and trees are being textured using
+ * different pattern
+ *
  * @author malcolmr
  */
 public class World extends Application3D implements MouseListener, KeyListener {
@@ -47,7 +56,9 @@ public class World extends Application3D implements MouseListener, KeyListener {
      * @throws FileNotFoundException change run configurations
      */
     public static void main(String[] args) throws IOException {
-        Terrain terrain = LevelIO.load(new File(args[0]));
+        File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
+        Terrain terrain = LevelIO.load(temp);
+//        Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
     }
@@ -62,8 +73,6 @@ public class World extends Application3D implements MouseListener, KeyListener {
 
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
-        this.terrain.drawObjects(gl, frame);
-
     }
 
 
