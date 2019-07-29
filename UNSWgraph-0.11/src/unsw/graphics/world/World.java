@@ -24,8 +24,6 @@ public class World extends Application3D{
 
     private Terrain terrain;
     private WorldCamera myCamera;
-
-    private WorldCamera myCamera;
     //data so we can drag around world
     private float rotateX = 0;
     private float rotateY = 0;
@@ -49,15 +47,11 @@ public class World extends Application3D{
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-<<<<<<< Updated upstream
         Terrain terrain = LevelIO.load(new File(args[0]));
         //terrain.printAltitude();
-=======
         //File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
         //Terrain terrain = LevelIO.load(temp);
-        Terrain terrain = LevelIO.load(new File(args[0]));
-        terrain.printAltitude();
->>>>>>> Stashed changes
+        terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
     }
@@ -86,11 +80,11 @@ public class World extends Application3D{
     }
 
 		//load textures
-
+    public void init(GL3 gl){
         Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
                 "shaders/fragment_directional_tex.glsl");
 
-        getWindow().addMouseListener(this);
+        //getWindow().addMouseListener(this);
 //        getWindow().addKeyListener(this);
 
         terrain.makeTerrain(gl);
@@ -105,18 +99,8 @@ public class World extends Application3D{
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width / (float) height, 1, 100));
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        myMousePoint = new Point2D(e.getX(), e.getY());
-    }
+    
 
-	}
-
-	@Override
-	public void reshape(GL3 gl, int width, int height) {
-		super.reshape(gl, width, height);
-		Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
-	}
 
 
 

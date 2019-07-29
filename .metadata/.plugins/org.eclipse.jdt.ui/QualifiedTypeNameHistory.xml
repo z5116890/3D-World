@@ -3,4 +3,8 @@
 <fullyQualifiedTypeName name="unsw.graphics.geometry.TriangleMesh"/>
 <fullyQualifiedTypeName name="com.jogamp.newt.event.KeyListener"/>
 <fullyQualifiedTypeName name="java.math.BigDecimal"/>
+<fullyQualifiedTypeName name="unsw.graphics.world.Terrain"/>
+<fullyQualifiedTypeName name="unsw.graphics.Texture"/>
+<fullyQualifiedTypeName name="unsw.graphics.Point2DBuffer"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
 </qualifiedTypeNameHistroy>
