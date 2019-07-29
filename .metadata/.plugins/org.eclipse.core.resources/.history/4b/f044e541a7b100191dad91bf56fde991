@@ -132,7 +132,19 @@ public class World extends Application3D implements MouseListener, KeyListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-     
+        Point2D p = new Point2D(e.getX(), e.getY());
+
+        if (myMousePoint != null) {
+            float dx = p.getX() - myMousePoint.getX();
+            float dy = p.getY() - myMousePoint.getY();
+
+            // Note: dragging in the x dir rotates about y
+            //       dragging in the y dir rotates about x
+            rotateY += dx * ROTATION_SCALE;
+            rotateX += dy * ROTATION_SCALE;
+
+        }
+        myMousePoint = p;
     }
 
     //helps to zoom in and out
