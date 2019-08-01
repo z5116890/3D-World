@@ -1,0 +1,63 @@
+package unsw.graphics.world;
+
+import java.io.IOException;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL3;
+import unsw.graphics.*;
+
+import unsw.graphics.CoordFrame3D;
+import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.TriangleMesh;
+
+public class Avatar extends TriangleMesh{
+    private Point3D myPos;
+    private Boolean show;
+    private float myAngle;
+    private Terrain myTerrain;
+
+    public Avatar(float x, float y, float z, Terrain terrain) throws IOException {
+    	super("res/models/cube.ply", true);
+    	myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
+        show = false;
+        myTerrain = terrain;
+    }
+    
+    public CoordFrame3D setView(){
+    	myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
+    	CoordFrame3D frame = CoordFrame3D.identity().rotateY(myAngle);
+        frame = frame.translate(myPos).translate(0, -1.5f, 0);
+    	return frame;
+    }
+    
+    public Boolean getShow(){
+    	return this.show;
+    }
+    
+    public void setShow(Boolean show){
+    	this.show = show;
+    }
+    
+    public void setAngle(float angle){
+    	this.myAngle = angle;
+    }
+    
+    public void setPos(Point3D pos){
+    	this.myPos = pos;
+    }
+    
+    
+    public Point3D getPosition() {
+        return myPos;
+    }
+
+
+
+
+
+
+	
+	
+	
+}

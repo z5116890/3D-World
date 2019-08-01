@@ -43,8 +43,9 @@ public class Terrain {
      *
      * @param width The number of vertices in the x-direction
      * @param depth The number of vertices in the z-direction
+     * @throws IOException 
      */
-    public Terrain(int width, int depth, Vector3 sunlight) {
+    public Terrain(int width, int depth, Vector3 sunlight) throws IOException {
         this.width = width;
         this.depth = depth;
         altitudes = new float[width][depth];
@@ -260,6 +261,8 @@ public class Terrain {
         this.makeTrees(gl);
 
     }
+    
+    
     public void drawSelf(GL3 gl, CoordFrame3D frame){
         //set texture
         Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture

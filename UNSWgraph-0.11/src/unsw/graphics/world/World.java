@@ -1,5 +1,6 @@
 package unsw.graphics.world;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import com.jogamp.opengl.GL3;
 
 import unsw.graphics.*;
 import unsw.graphics.geometry.Point2D;
+import unsw.graphics.geometry.Point3D;
 
 
 /**
@@ -28,10 +30,11 @@ import unsw.graphics.geometry.Point2D;
  *
  * @author malcolmr
  */
-public class World extends Application3D implements MouseListener, KeyListener {
+public class World extends Application3D {
 
     private Terrain terrain;
     private WorldCamera myCamera;
+    private Avatar avatar;
 
     //data so we can drag around world
     private float rotateX = 0;
@@ -39,13 +42,13 @@ public class World extends Application3D implements MouseListener, KeyListener {
     private float posX = 0;
     private float posY = 0;
     private float posZ = 0;
-    private Point2D myMousePoint = null;
     private static final int ROTATION_SCALE = 1;
 
 
-    public World(Terrain terrain) {
+    public World(Terrain terrain) throws IOException{
         super("Assignment 2", 800, 600);
         this.terrain = terrain;
+        this.avatar = new Avatar(0, 0, 0);
 
     }
 
@@ -68,9 +71,15 @@ public class World extends Application3D implements MouseListener, KeyListener {
                 .translate(posX, posY, posZ)
                 .rotateX(rotateX)
                 .rotateY(rotateY);
-
+        
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
+        
+        //if avatar showing then draw it every frame
+        if(this.myCamera.getAvatar().getShow()){
+        	this.myCamera.getAvatar().drawSelf(gl);
+        }
+        
     }
 
 
@@ -78,6 +87,7 @@ public class World extends Application3D implements MouseListener, KeyListener {
     public void destroy(GL3 gl) {
         super.destroy(gl);
         this.terrain.destroyObjects(gl);
+        this.avatar.destroy(gl);
     }
 
     @Override
@@ -87,10 +97,16 @@ public class World extends Application3D implements MouseListener, KeyListener {
         Shader shader = new Shader(gl, "shaders/vertex_directional_tex.glsl",
                 "shaders/fragment_directional_tex.glsl");
 
-        getWindow().addMouseListener(this);
-
+        
         terrain.makeTerrain(gl);
-        this.myCamera = new WorldCamera(terrain);
+        //initialise camera and avatar
+        try {
+			this.myCamera = new WorldCamera(terrain);
+			this.myCamera.getAvatar().init(gl);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         getWindow().addKeyListener(myCamera);
         shader.use(gl);
     }
@@ -101,78 +117,7 @@ public class World extends Application3D implements MouseListener, KeyListener {
         Shader.setProjMatrix(gl, Matrix4.perspective(60, width / (float) height, 1, 100));
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        myMousePoint = new Point2D(e.getX(), e.getY());
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseWheelMoved(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-     
-    }
-
-    //helps to zoom in and out
-    @Override
-    public void keyPressed(KeyEvent e) {
-        // TODO Auto-generated method stub
-        int key = e.getKeyCode();
-
-        if (key == KeyEvent.VK_LEFT) {
-            posX -= 1;
-        }
-
-        if (key == KeyEvent.VK_RIGHT) {
-            posX += 1;
-        }
-
-        if (key == KeyEvent.VK_UP) {
-            posY += 1;
-        }
-
-        if (key == KeyEvent.VK_DOWN) {
-            posY -= 1;
-        }
-
-        //zoom in
-        if (key == KeyEvent.VK_X) {
-            posZ += 1;
-        }
-
-        //zoom out
-        if (key == KeyEvent.VK_Z) {
-            posZ -= 1;
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
+    
 
 
 }

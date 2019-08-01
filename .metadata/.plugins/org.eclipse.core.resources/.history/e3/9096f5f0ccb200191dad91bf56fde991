@@ -1,0 +1,69 @@
+package unsw.graphics.world;
+
+import java.io.IOException;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL3;
+import unsw.graphics.*;
+import java.awt.Color;
+import unsw.graphics.CoordFrame3D;
+import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.TriangleMesh;
+
+public class Avatar extends TriangleMesh{
+    private Point3D myPos;
+    private Boolean show;
+    private float myAngle;
+
+    public Avatar(float x, float y, float z) throws IOException {
+    	super("res/models/cube.ply", true);
+    	myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
+        show = false;
+    }
+    
+    
+    public Boolean getShow(){
+    	return this.show;
+    }
+    
+    public void setShow(Boolean show){
+    	this.show = show;
+    }
+    
+    public void setAngle(float angle){
+    	this.myAngle += angle;
+    }
+    
+    public void setPosDown(){
+    	this.myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+    }
+    
+    public void setPosUp(){
+    	this.myPos = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+    }
+    
+    public void drawSelf(GL3 gl, CoordFrame3D frame){
+    	CoordFrame3D modelFrame = frame.rotateY(myAngle).translate(myPos).translate(0, -1.5f, 0);
+        Shader.setPenColor(gl, Color.BLUE);
+        this.draw(gl, modelFrame);
+    	
+    }
+    
+    public Point3D getPosition() {
+        return myPos;
+    }
+    
+    public void setPos(Point3D pos){
+    	this.myPos = pos;
+    }
+
+
+
+
+
+
+	
+	
+	
+}

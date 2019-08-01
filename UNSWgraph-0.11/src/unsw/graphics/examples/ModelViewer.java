@@ -3,6 +3,8 @@ package unsw.graphics.examples;
 import java.awt.Color;
 import java.io.IOException;
 
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
 
 import unsw.graphics.Application3D;
@@ -26,7 +28,7 @@ import unsw.graphics.geometry.TriangleMesh;
  * @author Robert Clifton-Everest
  *
  */
-public class ModelViewer extends Application3D {
+public class ModelViewer extends Application3D implements KeyListener {
 
     private static final boolean USE_LIGHTING = true;
 
@@ -35,11 +37,14 @@ public class ModelViewer extends Application3D {
     private TriangleMesh model;
 
     private TriangleMesh base;
+    
+    private Boolean show;
 
     public ModelViewer() throws IOException {
         super("Model viewer", 600, 600);
-        model = new TriangleMesh("res/models/tree.ply", true);
+        model = new TriangleMesh("res/models/cube.ply", true);
         base = new TriangleMesh("res/models/cube_normals.ply", true);
+        show = false;
     }
 
     @Override
@@ -47,6 +52,7 @@ public class ModelViewer extends Application3D {
         super.init(gl);
         model.init(gl);
         base.init(gl);
+        getWindow().addKeyListener(this);
         if (USE_LIGHTING) {
             Shader shader = new Shader(gl, "shaders/vertex_phong.glsl",
                     "shaders/fragment_phong.glsl");
@@ -106,9 +112,12 @@ public class ModelViewer extends Application3D {
         // This translation and scale works well for the tree
            .translate(0,0.5f,0).scale(0.1f,0.1f,0.1f);
 
-        Shader.setPenColor(gl, new Color(0.5f, 0.5f, 0.5f));
-        model.draw(gl, modelFrame);
-
+        //Shader.setPenColor(gl, new Color(0.5f, 0.5f, 0.5f));
+        if(show){
+        	System.out.println("yo");
+        	Shader.setPenColor(gl, Color.BLUE);
+        	model.draw(gl, modelFrame);
+        }
         // A blue base for the model to sit on.
         CoordFrame3D baseFrame =
                 frame.translate(0, -0.5f, 0).scale(0.5f, 0.5f, 0.5f);
@@ -124,5 +133,23 @@ public class ModelViewer extends Application3D {
         model.destroy(gl);
         base.destroy(gl);
     }
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		switch (e.getKeyCode()) {
+        
+        case KeyEvent.VK_A:
+            this.show = !show;
+		
+    }
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

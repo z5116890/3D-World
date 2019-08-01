@@ -1,0 +1,113 @@
+package unsw.graphics.world;
+
+import java.io.IOException;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL3;
+import unsw.graphics.CoordFrame3D;
+import unsw.graphics.Shader;
+import unsw.graphics.geometry.Point3D;
+
+public class WorldCamera implements KeyListener {
+    private Point3D myPos;
+    private float myAngle; // Only rotate around y-axis
+    private Terrain myTerrain;
+    private CoordFrame3D viewFrame;
+    
+    //avatar
+    private Avatar myAvatar;
+    private float distanceFromAvatar;
+    private float angleToAvatar = 270;
+    
+
+    public WorldCamera(Terrain terrain) throws IOException {
+        myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
+        myAngle = 0;
+        myTerrain = terrain;
+        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 0);
+        this.myAvatar = new Avatar(5, 10, 13);
+        this.distanceFromAvatar = Math.abs(myPos.getZ() + this.myAvatar.getPosition().getZ());
+    }
+
+    public void setView(GL3 gl) {
+        Shader.setViewMatrix(gl, viewFrame.getMatrix());
+    }
+    
+    public CoordFrame3D getView(){
+    	return viewFrame;
+    }
+    
+    
+    public Avatar getAvatar(){
+    	return this.myAvatar;
+    }
+    
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_LEFT:
+            	myAngle -= 5;
+            	if(this.myAvatar.getShow()){
+            		this.myAvatar.setAngle(5);
+            		this.angleToAvatar -= 5;
+            		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
+            		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
+            		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
+            		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
+            		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
+            		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+            	}
+                break;
+
+            case KeyEvent.VK_RIGHT:
+            	myAngle += 5;
+            	if(this.myAvatar.getShow()){
+            		this.myAvatar.setAngle(-5);
+            		this.angleToAvatar += 5;
+            		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
+            		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
+            		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
+            		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
+            		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
+            		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+            		
+            	}
+                break;
+
+            case KeyEvent.VK_DOWN:
+                myPos = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                this.myAvatar.setPosDown(this.myAngle);
+                break;
+
+            case KeyEvent.VK_UP:
+                myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                this.myAvatar.setPosUp(this.myAngle);
+                break;
+                
+            case KeyEvent.VK_A:
+                this.myAvatar.setShow(!this.myAvatar.getShow());
+                break;
+                
+    		
+        }
+        //camera climbs terrain the same time avatar does
+        if(this.myAvatar.getShow()){
+        	myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), myPos.getZ());
+        }else{
+        	myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
+        }
+        
+        this.myAvatar.setPos(new Point3D(this.myAvatar.getPosition().getX(), myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), this.myAvatar.getPosition().getZ()));
+        System.out.println("avatar y:" + this.myAvatar.getPosition().getY());
+        viewFrame = CoordFrame3D.identity().rotateY(myAngle);
+        viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+}

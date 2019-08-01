@@ -1,0 +1,61 @@
+package unsw.graphics.world;
+
+import java.io.IOException;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.opengl.GL3;
+import unsw.graphics.*;
+
+import unsw.graphics.CoordFrame3D;
+import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.TriangleMesh;
+
+public class Avatar extends TriangleMesh{
+    private Point3D myPos;
+    private float myAngle; // Only rotate around y-axis
+    private Terrain myTerrain;
+    private CoordFrame3D viewFrame;
+    private Boolean show;
+    private TriangleMesh model;
+
+    public Avatar(float x, float y, float z) throws IOException {
+    	super("res/models/bunny.ply", true);
+        myPos = new Point3D(x, y, z);
+        myAngle = 0;
+        viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 0);
+        show = false;
+    }
+    
+ 
+    
+    public Boolean getShow(){
+    	return this.show;
+    }
+    
+    public void setShow(Boolean show){
+    	this.show = show;
+    }
+    
+    
+    public Point3D getPosition() {
+        return myPos;
+    }
+
+    public void drawSelf(GL3 gl, CoordFrame3D frame) {
+        gl.glEnable(GL3.GL_CULL_FACE);
+        this.draw(gl, frame.translate(position).translate(0,0.5f,0).scale(0.1f,0.1f,0.1f));
+    }
+
+    public void setTexture(GL3 gl){
+        this.init(gl);
+        myTexture = new Texture(gl, textureFilename, textureExtension, false);
+
+    }
+
+
+
+	
+	
+	
+}
