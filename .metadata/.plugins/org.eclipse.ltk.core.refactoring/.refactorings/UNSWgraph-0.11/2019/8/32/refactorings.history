@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Encapsulate field &apos;unsw.graphics.world.Terrain.nightTime&apos; in &apos;unsw.graphics.world.Terrain&apos;&#x0A;- Original project: &apos;UNSWgraph-0.11&apos;&#x0A;- Original element: &apos;unsw.graphics.world.Terrain.nightTime&apos;&#x0A;- Getter method name: &apos;isNightTime&apos;&#x0A;- Setter method name: &apos;setNightTime&apos;&#x0A;- Field visibility: &apos;public&apos;&#x0A;- Use getter and setter methods in declaring type" comments="false" declaring="true" description="Encapsulate field &apos;nightTime&apos;" flags="589830" getter="isNightTime" id="org.eclipse.jdt.ui.self.encapsulate" input="/src&lt;unsw.graphics.world{Terrain.java[Terrain^nightTime" insertion="22" setter="setNightTime" stamp="1565159837980" version="1.0" visibility="1"/>
+</session>

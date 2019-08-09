@@ -1,0 +1,82 @@
+
+out vec4 outputColor;
+
+uniform vec4 input_color;
+
+uniform mat4 view_matrix;
+
+// Light properties
+// uniform vec3 lightPos;
+// uniform vec3 lightIntensity;
+uniform vec3 ambientIntensity;
+uniform vec3 sunlightDirection;
+uniform vec3 sunlight;
+uniform vec3 avPos;
+uniform vec3 camPos;
+uniform vec3 skyColour;
+
+
+// Material properties
+uniform vec3 ambientCoeff;
+uniform vec3 diffuseCoeff;
+uniform vec3 specularCoeff;
+uniform float phongExp;
+
+uniform sampler2D tex;
+
+const float density = 0.05;
+const float gradient = 5;
+
+in vec4 viewPosition;
+in vec3 m;
+
+in vec2 texCoordFrag;
+
+void main()
+{
+//fog
+	float distance = length(viewPosition.xyz);
+	float visibility = exp(-pow((distance*density), gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+
+
+//directional light
+	vec3 m_unit = normalize(m);
+    // Compute the s, v and r vectors
+   	vec3 s = normalize(view_matrix*vec4(sunlightDirection,1) - viewPosition).xyz;
+    
+    vec3 v = normalize(-viewPosition.xyz);
+    vec3 r = normalize(reflect(-s,m_unit));
+
+    vec3 ambient = ambientIntensity*ambientCoeff;
+    vec3 diffuse = max(sunlight*diffuseCoeff*dot(normalize(m_unit),s), 0.0);
+    vec3 specular;
+
+    // Only show specular reflections for the front face
+    if (dot(m_unit,s) > 0)
+        specular = max(sunlight*specularCoeff*pow(dot(r,v),phongExp), 0.0);
+    else
+        specular = vec3(0);
+
+    vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
+
+    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+    
+//spotlight
+	vec3 spotDirection = normalize((vec4(avPos,1) - vec4(camPos,1))).xyz;
+	float inner_cutoff = 0.9977982792;
+	//float distance = (viewPosition.x - camPos.x)/(viewPosition.z - camPos.z);
+   	vec3 torch = normalize(vec4(camPos,1) - viewPosition).xyz;
+   	float theta = dot(torch, normalize(-spotDirection));
+   	
+    //ambientAndDiffuse = vec4(0,0,0, 1);
+    if(theta > inner_cutoff){
+    	diffuse = diffuse + max(dot(m_unit,torch), 0.0);
+    	ambientAndDiffuse = ambientAndDiffuse + vec4(diffuse, 1);
+	}
+   
+
+    outputColor = outputColor + ambientAndDiffuse*input_color*texture(tex, texCoordFrag);
+    outputColor = mix(vec4(skyColour, 1.0), outputColor, visibility);
+    
+}

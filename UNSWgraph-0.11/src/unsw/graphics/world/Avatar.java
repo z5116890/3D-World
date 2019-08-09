@@ -7,7 +7,7 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL3;
 import unsw.graphics.*;
 import java.awt.Color;
-import unsw.graphics.CoordFrame3D;
+
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
@@ -69,6 +69,7 @@ public class Avatar extends TriangleMesh{
     public void setFrame(CoordFrame3D frame){
     	this.frame = frame;
     }
+    
 
 
 

@@ -11,14 +11,26 @@ uniform mat4 view_matrix;
 uniform vec3 ambientIntensity;
 uniform vec3 sunlightDirection;
 uniform vec3 sunlight;
+uniform vec3 avPos;
+uniform vec3 camPos;
+uniform vec3 skyColour;
+
 
 // Material properties
 uniform vec3 ambientCoeff;
 uniform vec3 diffuseCoeff;
 uniform vec3 specularCoeff;
 uniform float phongExp;
+uniform float inner_cutoff;
+uniform float outer_cutoff;
+uniform float light_constant;
+uniform float light_linear;
+uniform float light_quadratic;
 
 uniform sampler2D tex;
+
+const float density = 0.05;
+const float gradient = 5;
 
 in vec4 viewPosition;
 in vec3 m;
@@ -27,10 +39,19 @@ in vec2 texCoordFrag;
 
 void main()
 {
+	//fog
+	float distance = length(viewPosition.xyz);
+	float visibility = exp(-pow((distance*density), gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+	
+	//attenuated distance
+	float attenuation = clamp( 7.0 / distance, 0.0, 1.0);
+
+
+	//directional light
 	vec3 m_unit = normalize(m);
     // Compute the s, v and r vectors
-    //vec3 s = normalize(view_matrix*vec4(lightPos,1) - viewPosition).xyz;
-    vec3 s = normalize(-sunlightDirection);
+   	vec3 s = normalize(view_matrix*vec4(sunlightDirection,1) - viewPosition).xyz;
     
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m_unit));
@@ -48,4 +69,18 @@ void main()
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+    
+	//spotlight
+	vec3 spotDirection = normalize((vec4(avPos,1) - vec4(camPos,1))).xyz;
+   	vec3 lightToFrag = normalize(vec4(camPos,1) - viewPosition).xyz;
+   	float theta = dot(lightToFrag, normalize(-spotDirection));
+   	float epsilon = inner_cutoff - outer_cutoff;
+   	float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0); 
+   	diffuse = (diffuse + intensity)*attenuation;
+    ambientAndDiffuse = ambientAndDiffuse + vec4(diffuse, 1);
+	
+
+    outputColor = outputColor + ambientAndDiffuse*input_color*texture(tex, texCoordFrag);
+    outputColor = mix(vec4(skyColour, 1.0), outputColor, visibility);
+    
 }
