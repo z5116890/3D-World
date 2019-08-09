@@ -30,6 +30,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
+    private List<Ponds> ponds;
     private Vector3 sunlight;
 
     private Texture myTexture;
@@ -53,6 +54,7 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<>();
         roads = new ArrayList<>();
+        ponds = new ArrayList<>();
         this.sunlight = sunlight;
         terrainMeshes = new ArrayList<>();
     }
@@ -63,6 +65,10 @@ public class Terrain {
 
     public List<Road> roads() {
         return roads;
+    }
+
+    public List<Ponds> ponds() {
+        return ponds;
     }
 
     public Vector3 getSunlight() {
@@ -228,9 +234,14 @@ public class Terrain {
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
-        //TODO: may store the last computed x and z to speed up the computation, since most road are on same altitude
         Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(1).getY()));
         roads.add(road);        
+    }
+
+    public void addPonds(Point2D position, float width) {
+        Ponds newPond = new Ponds(new Point3D(position.getX(), computeAltitude(position.getX(),
+                position.getY()), position.getY()), width);
+        ponds.add(newPond);
     }
     
     
@@ -284,6 +295,9 @@ public class Terrain {
         for(Road curRoad : this.roads){
             curRoad.drawSelf(gl, frame);
         }
+        for(Ponds curPond : this.ponds){
+            curPond.drawSelf(gl, frame);
+        }
 
     }
     //set lighting properties for terrain
@@ -317,6 +331,9 @@ public class Terrain {
         for(Road curRoad : this.roads){
             curRoad.init(gl);
         }
+        for(Ponds curPond : this.ponds){
+            curPond.init(gl);
+        }
     }
 
     public void destroyObjects(GL3 gl){
@@ -326,6 +343,9 @@ public class Terrain {
         }
         for(Road curRoad : this.roads){
             curRoad.destroy(gl);
+        }
+        for(Ponds curPond : this.ponds){
+            curPond.destroy(gl);
         }
     }
     
