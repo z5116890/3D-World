@@ -49,8 +49,8 @@ public class Terrain {
         this.width = width;
         this.depth = depth;
         altitudes = new float[width][depth];
-        trees = new ArrayList<Tree>();
-        roads = new ArrayList<Road>();
+        trees = new ArrayList<>();
+        roads = new ArrayList<>();
         this.sunlight = sunlight;
         terrainMeshes = new ArrayList<>();
     }
@@ -226,7 +226,8 @@ public class Terrain {
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
-        Road road = new Road(width, spine);
+        //TODO: may store the last computed x and z to speed up the computation, since most road are on same altitude
+        Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(1).getY()));
         roads.add(road);        
     }
     
@@ -258,8 +259,7 @@ public class Terrain {
                 terrainMeshes.add(second);
             }
         }
-        this.makeTrees(gl);
-
+        this.makeObjects(gl);
     }
     
     
@@ -278,6 +278,9 @@ public class Terrain {
         }
         for(Tree curTree : this.trees){
             curTree.drawSelf(gl, frame);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.drawSelf(gl, frame);
         }
 
     }
@@ -303,9 +306,12 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
     }
 
-    private void makeTrees(GL3 gl){
+    private void makeObjects(GL3 gl) {
         for(Tree curTree : this.trees){
             curTree.init(gl);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.init(gl);
         }
     }
 
@@ -313,6 +319,9 @@ public class Terrain {
         myTexture.destroy(gl);
         for(Tree curTree : this.trees){
             curTree.destroy(gl);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.destroy(gl);
         }
     }
 }
