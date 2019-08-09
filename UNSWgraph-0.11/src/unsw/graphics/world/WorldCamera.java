@@ -1,5 +1,6 @@
 package unsw.graphics.world;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -14,14 +15,18 @@ public class WorldCamera implements KeyListener {
     private float myAngle; // Only rotate around y-axis
     private Terrain myTerrain;
     private CoordFrame3D viewFrame;
+    private int dimLevel = 1;
     
     //avatar
     private Avatar myAvatar;
     private float distanceFromAvatar;
     private float angleToAvatar = 270;
     
+    //torch
+    private boolean showTorch = false;
+    
 
-    public WorldCamera(Terrain terrain) throws IOException {
+    public WorldCamera(Terrain terrain, GL3 gl) throws IOException {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
         myAngle = 0;
         myTerrain = terrain;
@@ -56,25 +61,28 @@ public class WorldCamera implements KeyListener {
             	myAngle -= 5;
             	this.myAvatar.setAngle(5);
         		this.angleToAvatar -= 5;
+        		if(this.myAvatar.getShow()){
         		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
         		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
         		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
         		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
         		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
         		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+        		}
                 break;
 
             case KeyEvent.VK_RIGHT:
             	myAngle += 5;
         		this.myAvatar.setAngle(-5);
         		this.angleToAvatar += 5;
-        		cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
-        		cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
-        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
-        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
-        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
-        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
-            		
+        		if(this.myAvatar.getShow()){
+	        		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
+	        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
+	        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
+	        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
+	        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
+	        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+        		}
                 break;
 
             case KeyEvent.VK_DOWN:
@@ -90,6 +98,27 @@ public class WorldCamera implements KeyListener {
             //press A to show avatar    
             case KeyEvent.VK_A:
                 this.myAvatar.setShow(!this.myAvatar.getShow());
+                break;
+            
+            case KeyEvent.VK_L:
+            	if(this.myTerrain.getSunlightColour() == Color.YELLOW.brighter()){
+            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker());
+            	}else if(this.dimLevel == 1){
+            		this.myTerrain.setSunlightColour(Color.YELLOW.brighter());
+            	}else if(this.dimLevel == 2){
+            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker());
+            	}else if(this.dimLevel == 3){
+            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker().darker());
+            	}else{
+            		this.myTerrain.setSunlightColour(Color.YELLOW.brighter());
+            		this.dimLevel = 0;
+            	}
+            	this.dimLevel++;
+            	break;
+            	
+            	//press S to show torch    
+            case KeyEvent.VK_S:
+                this.showTorch = !this.showTorch;
                 break;
                 
     		
@@ -109,6 +138,39 @@ public class WorldCamera implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+    
+    public void setColor(GL3 gl){
+    	Shader.setColor(gl, "sunlight", Color.YELLOW.GRAY);
+    }
+    
+    public void setTorch(GL3 gl, CoordFrame3D frame) {
+        //set torch direction
+    	
+    	if(this.showTorch){
+    		//camera pos
+	    	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
+	    	Point3D avPos = this.getAvatar().getPosition();
+	        Point3D torchStart = frame.transform(pos);
+	        Shader.setPoint3D(gl, "camPos", torchStart);
+	        //camera direction
+	        Point3D lightDir = frame.transform(avPos);
+	        Shader.setPoint3D(gl, "avPos", avPos);
+	        Shader.setFloat(gl, "inner_cutoff", (float)Math.cos(12.5));
+	        Shader.setFloat(gl, "outer_cutoff", 0.993f);
+	        Shader.setFloat(gl, "light_constant",  1.0f);
+	        Shader.setFloat(gl, "light_linear",    0.09f);
+	        Shader.setFloat(gl, "light_quadratic", 0.032f);
+	        
+	
+	        Shader.setPenColor(gl, Color.WHITE);
+    	}else{
+    		Point3D pos = new Point3D(0,this.myPos.getY(),0);
+	    	Point3D torchStart = frame.transform(pos);
+	        Shader.setPoint3D(gl, "myDirection", torchStart);
+	
+	        Shader.setPenColor(gl, Color.WHITE);
+    	}
     }
 
 }

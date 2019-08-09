@@ -37,6 +37,8 @@ public class Terrain {
     private String textureExtension = "bmp";
 
     private List<TriangleMesh> terrainMeshes;
+    private Color sunlightColour = Color.YELLOW.brighter();
+    private boolean nightTime = false;
 
     /**
      * Create a new terrain
@@ -289,8 +291,10 @@ public class Terrain {
         //set sunlight direction
         Point3D localSunlight = frame.transform(this.getSunlight().asPoint3D());
         Shader.setPoint3D(gl, "sunlightDirection", localSunlight);
-        Shader.setColor(gl, "sunlight", Color.WHITE);
-
+        Shader.setColor(gl, "sunlight", this.sunlightColour);
+        Shader.setColor(gl, "skyColour", Color.BLUE.white);
+       
+        
         // Set the lighting properties
         //Shader.setPoint3D(gl, "lightPos", new Point3D(0, 0, 5));
         //Shader.setColor(gl, "lightIntensity", Color.WHITE);
@@ -324,4 +328,21 @@ public class Terrain {
             curRoad.destroy(gl);
         }
     }
+    
+    public void setSunlightColour(Color c){
+    	this.sunlightColour = c;
+    }
+    
+    public Color getSunlightColour(){
+    	return this.sunlightColour;
+    }
+
+	public boolean isNightTime() {
+		return this.nightTime;
+	}
+
+	public void setNightTime(boolean nightTime) {
+		this.nightTime = nightTime;
+	}
+    
 }

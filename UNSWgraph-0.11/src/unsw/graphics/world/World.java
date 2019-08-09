@@ -74,7 +74,8 @@ public class World extends Application3D {
         
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
-        
+        this.myCamera.setTorch(gl, frame);
+
         //if avatar showing then draw it every frame
         if(this.myCamera.getAvatar().getShow()){
         	this.myCamera.getAvatar().drawSelf(gl);
@@ -101,7 +102,7 @@ public class World extends Application3D {
         terrain.makeTerrain(gl);
         //initialise camera and avatar
         try {
-			this.myCamera = new WorldCamera(terrain);
+			this.myCamera = new WorldCamera(terrain, gl);
 			this.myCamera.getAvatar().init(gl);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
