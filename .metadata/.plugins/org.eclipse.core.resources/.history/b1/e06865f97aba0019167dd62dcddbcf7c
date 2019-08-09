@@ -61,28 +61,25 @@ public class WorldCamera implements KeyListener {
             	myAngle -= 5;
             	this.myAvatar.setAngle(5);
         		this.angleToAvatar -= 5;
-        		if(this.myAvatar.getShow()){
         		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
         		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
         		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
         		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
         		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
         		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
-        		}
                 break;
 
             case KeyEvent.VK_RIGHT:
             	myAngle += 5;
         		this.myAvatar.setAngle(-5);
         		this.angleToAvatar += 5;
-        		if(this.myAvatar.getShow()){
-	        		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
-	        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
-	        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
-	        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
-	        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
-	        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
-        		}
+        		cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
+        		cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
+        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
+        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
+        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
+        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+            		
                 break;
 
             case KeyEvent.VK_DOWN:
