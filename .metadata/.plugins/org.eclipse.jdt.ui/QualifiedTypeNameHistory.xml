@@ -3,4 +3,9 @@
 <fullyQualifiedTypeName name="unsw.graphics.geometry.TriangleMesh"/>
 <fullyQualifiedTypeName name="com.jogamp.newt.event.KeyListener"/>
 <fullyQualifiedTypeName name="java.math.BigDecimal"/>
+<fullyQualifiedTypeName name="com.jogamp.opengl.GL2"/>
+<fullyQualifiedTypeName name="java.awt.Color"/>
+<fullyQualifiedTypeName name="unsw.graphics.CoordFrame3D"/>
+<fullyQualifiedTypeName name="unsw.graphics.Texture"/>
+<fullyQualifiedTypeName name="unsw.graphics.geometry.Point3D"/>
 </qualifiedTypeNameHistroy>

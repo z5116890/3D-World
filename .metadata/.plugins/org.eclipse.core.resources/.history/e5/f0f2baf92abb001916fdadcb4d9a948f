@@ -68,6 +68,7 @@ void main()
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+<<<<<<< HEAD
     
 	//spotlight
 	vec3 spotDirection = normalize((vec4(torchEnd,1) - vec4(camPos,1))).xyz;
@@ -76,7 +77,16 @@ void main()
    	float epsilon = inner_cutoff - outer_cutoff;
    	float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0); 
    	diffuse = (diffuse + intensity)*attenuation;
+=======
 
+    //spotlight
+    vec3 spotDirection = normalize((vec4(avPos,1) - vec4(camPos,1))).xyz;
+    vec3 lightToFrag = normalize(vec4(camPos,1) - viewPosition).xyz;
+    float theta = dot(lightToFrag, normalize(-spotDirection));
+    float epsilon = inner_cutoff - outer_cutoff;
+    float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0);
+    diffuse = (diffuse + intensity)*attenuation;
+>>>>>>> c3888832a2a0ee8c886fe58b3174fd5a881bdf9e
     ambientAndDiffuse = ambientAndDiffuse + vec4(diffuse, 1);
 
 
