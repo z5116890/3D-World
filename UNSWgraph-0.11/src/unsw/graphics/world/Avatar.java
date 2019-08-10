@@ -19,7 +19,7 @@ public class Avatar extends TriangleMesh{
     private CoordFrame3D frame = CoordFrame3D.identity();
 
     private Texture myTexture;
-    private String textureFilename = "res/Textures/fur2.jpg";
+    private String textureFilename = "res/Textures/wolf/Wolf_Body.jpg";
     private String textureExtension = "jpg";
 
     public Avatar(float x, float y, float z) throws IOException {
