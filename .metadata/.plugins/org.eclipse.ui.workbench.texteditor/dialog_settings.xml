@@ -8,12 +8,14 @@
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="avPos"/>
+			<item value="make"/>
+			<item value="texture"/>
 			<item value="setter"/>
 			<item value="gl"/>
 			<item value="tree"/>
 			<item value="transform"/>
 			<item value=" altitude("/>
-			<item value="double"/>
 		</list>
 		<list key="replacehistory">
 		</list>

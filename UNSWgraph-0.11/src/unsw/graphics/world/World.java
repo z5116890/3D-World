@@ -73,6 +73,7 @@ public class World extends Application3D {
                 .translate(posX, posY, posZ)
                 .rotateX(rotateX)
                 .rotateY(rotateY);
+        	
         
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
@@ -106,6 +107,7 @@ public class World extends Application3D {
         try {
 			this.myCamera = new WorldCamera(terrain, gl);
 			this.myCamera.getAvatar().init(gl);
+			this.myCamera.getAvatar().makeAvatar(gl);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -22,6 +22,10 @@ public class WorldCamera implements KeyListener {
     private float distanceFromAvatar;
     private float angleToAvatar = 270;
     
+    //spotlight
+    private Point3D torchEnd;
+    
+    
     //torch
     private boolean showTorch = false;
     
@@ -35,6 +39,7 @@ public class WorldCamera implements KeyListener {
         //camera position for test 1: -5, 0 , -20
         //avatar is positioned just in front of camera
         this.myAvatar = new Avatar(terrain.getWidth()/2f, 10, terrain.getDepth()*2f - 7);
+        this.torchEnd = new Point3D(terrain.getWidth()/2f, 0f, terrain.getDepth()*2f - 10);
         //need distance to calculate rotation around avatar
         this.distanceFromAvatar = Math.abs(myPos.getZ() + this.myAvatar.getPosition().getZ());
     }
@@ -64,9 +69,6 @@ public class WorldCamera implements KeyListener {
         		if(this.myAvatar.getShow()){
         		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
         		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
-        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
-        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
-        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
         		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
         		}
                 break;
@@ -78,20 +80,19 @@ public class WorldCamera implements KeyListener {
         		if(this.myAvatar.getShow()){
 	        		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
 	        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
-	        		System.out.println("my x: " + this.myPos.getX() + "  y: " + this.myPos.getZ());
-	        		System.out.println("camera x " + cameraX + " y " + cameraY + " angle " + this.angleToAvatar);
-	        		System.out.println("avatar x: " + this.myAvatar.getPosition().getX() + "  y: " + this.myAvatar.getPosition().getZ());
 	        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
         		}
                 break;
 
             case KeyEvent.VK_DOWN:
                 myPos = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                torchEnd = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosDown(this.myAngle);
                 break;
 
             case KeyEvent.VK_UP:
                 myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                torchEnd = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosUp(this.myAngle);
                 break;
                 
@@ -150,12 +151,12 @@ public class WorldCamera implements KeyListener {
     	if(this.showTorch){
     		//camera pos
 	    	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
-	    	Point3D avPos = this.getAvatar().getPosition();
-	        Point3D torchStart = frame.transform(pos);
+	    	//fragment shader calculates the vector from torchStart(camera position) to torchEnd
+	    	Point3D torchStart = frame.transform(pos);
 	        Shader.setPoint3D(gl, "camPos", torchStart);
-	        //camera direction
-	        Point3D lightDir = frame.transform(avPos);
-	        Shader.setPoint3D(gl, "avPos", avPos);
+	        Point3D lightDir = frame.transform(torchEnd);
+	        Shader.setPoint3D(gl, "torchEnd", lightDir);
+	        
 	        Shader.setFloat(gl, "inner_cutoff", (float)Math.cos(12.5));
 	        Shader.setFloat(gl, "outer_cutoff", 0.993f);
 	        Shader.setFloat(gl, "light_constant",  1.0f);

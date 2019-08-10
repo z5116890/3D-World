@@ -11,7 +11,7 @@ uniform mat4 view_matrix;
 uniform vec3 ambientIntensity;
 uniform vec3 sunlightDirection;
 uniform vec3 sunlight;
-uniform vec3 avPos;
+uniform vec3 torchEnd;
 uniform vec3 camPos;
 uniform vec3 skyColour;
 
@@ -71,7 +71,7 @@ void main()
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
     
 	//spotlight
-	vec3 spotDirection = normalize((vec4(avPos,1) - vec4(camPos,1))).xyz;
+	vec3 spotDirection = normalize((vec4(torchEnd,1) - vec4(camPos,1))).xyz;
    	vec3 lightToFrag = normalize(vec4(camPos,1) - viewPosition).xyz;
    	float theta = dot(lightToFrag, normalize(-spotDirection));
    	float epsilon = inner_cutoff - outer_cutoff;
