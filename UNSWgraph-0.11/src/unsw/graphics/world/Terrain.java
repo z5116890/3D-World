@@ -234,7 +234,7 @@ public class Terrain {
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
-        Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(1).getY()));
+        Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(0).getY()));
         roads.add(road);        
     }
 

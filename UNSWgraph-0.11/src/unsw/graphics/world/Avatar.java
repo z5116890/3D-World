@@ -18,7 +18,7 @@ public class Avatar extends TriangleMesh{
     private CoordFrame3D frame = CoordFrame3D.identity();
 
     public Avatar(float x, float y, float z) throws IOException {
-    	super("res/models/cube.ply", true);
+    	super("res/models/wolf.ply", true);
     	this.myPos = new Point3D(x,y,z);
         show = false;
     }
@@ -48,7 +48,11 @@ public class Avatar extends TriangleMesh{
     
     public void drawSelf(GL3 gl){
     	//configure to make avatar climb more aesthetically
-    	CoordFrame3D modelFrame = frame.translate(myPos).translate(0, 0.5f, 0).rotateY(myAngle);
+        //For cube
+//    	CoordFrame3D modelFrame = frame.translate(myPos).translate(0, 0.5f, 0).rotateY(myAngle);
+        //For wolf //translate(0, 0.3f, 3.5f)
+        CoordFrame3D modelFrame = frame.translate(myPos).rotateY(myAngle)
+                .rotateX(100).rotateY(180);
         Shader.setPenColor(gl, Color.BLUE);
         this.draw(gl, modelFrame);
     	
@@ -69,13 +73,6 @@ public class Avatar extends TriangleMesh{
     public void setFrame(CoordFrame3D frame){
     	this.frame = frame;
     }
-    
 
-
-
-
-
-	
-	
 	
 }

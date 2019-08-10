@@ -148,36 +148,26 @@ public class Road {
         float x = tangentB(0, t) * p0.getX() + tangentB(1, t) * p1.getX() + tangentB(2, t) * p2.getX() + tangentB(3, t) * p3.getX();
         float y = tangentB(0, t) * p0.getY() + tangentB(1, t) * p1.getY() + tangentB(2, t) * p2.getY() + tangentB(3, t) * p3.getY();
 
-        // if completely horizontal
-        if (x == 0) {
-            x = 1;
+        //Find the slope of line vertical to the tangent line, with magnitude of half the road width
+        //Therefore in the future steps in init, we can add and minus this magnitude around the bezier
+        //points to get a road with required width
+        if(x == 0) {
+            x = (float) (width * 0.5);
             y = 0;
-        } else if (y == 0) { //if completely vertical
-            //set an value if it is the first point and vertical
-            if (prevT == null) {
-                prevT = new Point2D(0, -1);
+        } else if (y == 0){
+            y = (float) (width * 0.5);
+            if(x>0){
+                y = -y;
             }
-            //try get the last normal to decide the direction
             x = 0;
-            if (prevT.getY() > 0) {
-                y = 1;
-            } else {
-                y = -1;
-            }
-        } else if (x > 0) {
-            x = 1 / x;
-            y = -1 / y;
-        } else {
-            x = -1 / x;
-            y = 1 / y;
+        } else{
+            double k = -x/y;
+            double angle = Math.atan(k);
+            x = (float) (width*0.5*Math.cos(angle));
+            y = (float) (width*0.5*Math.sin(angle));
         }
-        //uniform the length
-        double scale = .5 * width / Math.sqrt(x * x + y * y);
-        x = (float) (x * scale);
-        y = (float) (y * scale);
-        //update tangent
-        prevT = new Point2D(x, y);
-        return prevT;
+
+        return new Point2D(x, y);
     }
 
     private float tangentB(int i, float t) {
