@@ -78,7 +78,10 @@ void main()
    	float intensity = clamp((theta - outer_cutoff) / epsilon, 0.0, 1.0); 
    	diffuse = (diffuse + intensity)*attenuation;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 81ed488... cahgnes
 =======
 >>>>>>> parent of 81ed488... cahgnes
     ambientAndDiffuse = ambientAndDiffuse + vec4(diffuse, 1);

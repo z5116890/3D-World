@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;UNSWgraph-0.11&apos;" deleteContents="false" description="Delete resource &apos;UNSWgraph-0.11&apos;" element1="/UNSWgraph-0.11" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565412678162"/>&#x0A;<refactoring comment="Delete resource &apos;unswGraph_Master&apos;" deleteContents="false" description="Delete resource &apos;unswGraph_Master&apos;" element1="/unswGraph_Master" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565412684121"/>&#x0A;<refactoring comment="Delete resource &apos;UNSWgraph&apos;" deleteContents="false" description="Delete resource &apos;UNSWgraph&apos;" element1="/UNSWgraph" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565412693096"/>
+=======
+<session version="1.0">
+<refactoring comment="Delete resource &apos;example&apos;" deleteContents="false" description="Delete resource &apos;example&apos;" element1="/example" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565146611305"/>
+>>>>>>> parent of 81ed488... cahgnes
 =======
 <session version="1.0">
 <refactoring comment="Delete resource &apos;example&apos;" deleteContents="false" description="Delete resource &apos;example&apos;" element1="/example" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565146611305"/>

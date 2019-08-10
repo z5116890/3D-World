@@ -59,21 +59,7 @@ public class World extends Application3D {
      * @throws FileNotFoundException change run configurations
      */
     public static void main(String[] args) throws IOException {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
-        Terrain terrain = LevelIO.load(temp);
-//        Terrain terrain = LevelIO.load(new File(args[0]));
-=======
-        //File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
-        //Terrain terrain = LevelIO.load(temp);
-    	Terrain terrain = LevelIO.load(new File(args[0]));
->>>>>>> parent of 81ed488... cahgnes
-=======
-        //File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
-        //Terrain terrain = LevelIO.load(temp);
-    	Terrain terrain = LevelIO.load(new File(args[0]));
->>>>>>> parent of 81ed488... cahgnes
+        Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
     }
@@ -85,11 +71,9 @@ public class World extends Application3D {
                 .translate(posX, posY, posZ)
                 .rotateX(rotateX)
                 .rotateY(rotateY);
-        	
         
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
-        this.myCamera.setTorch(gl, frame);
         
         //if avatar showing then draw it every frame
         if(this.myCamera.getAvatar().getShow()){
@@ -117,16 +101,14 @@ public class World extends Application3D {
         terrain.makeTerrain(gl);
         //initialise camera and avatar
         try {
-			this.myCamera = new WorldCamera(terrain, gl);
+			this.myCamera = new WorldCamera(terrain);
 			this.myCamera.getAvatar().init(gl);
-			this.myCamera.getAvatar().makeAvatar(gl);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         getWindow().addKeyListener(myCamera);
         shader.use(gl);
-        
     }
 
     @Override
