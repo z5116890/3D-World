@@ -30,6 +30,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
+    private List<Ponds> ponds;
     private Vector3 sunlight;
 
     private Texture myTexture;
@@ -51,8 +52,9 @@ public class Terrain {
         this.width = width;
         this.depth = depth;
         altitudes = new float[width][depth];
-        trees = new ArrayList<Tree>();
-        roads = new ArrayList<Road>();
+        trees = new ArrayList<>();
+        roads = new ArrayList<>();
+        ponds = new ArrayList<>();
         this.sunlight = sunlight;
         terrainMeshes = new ArrayList<>();
     }
@@ -63,6 +65,10 @@ public class Terrain {
 
     public List<Road> roads() {
         return roads;
+    }
+
+    public List<Ponds> ponds() {
+        return ponds;
     }
 
     public Vector3 getSunlight() {
@@ -228,8 +234,14 @@ public class Terrain {
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
-        Road road = new Road(width, spine);
+        Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(1).getY()));
         roads.add(road);        
+    }
+
+    public void addPonds(Point2D position, float width) {
+        Ponds newPond = new Ponds(new Point3D(position.getX(), computeAltitude(position.getX(),
+                position.getY()), position.getY()), width);
+        ponds.add(newPond);
     }
     
     
@@ -260,8 +272,7 @@ public class Terrain {
                 terrainMeshes.add(second);
             }
         }
-        this.makeTrees(gl);
-
+        this.makeObjects(gl);
     }
     
     
@@ -280,6 +291,12 @@ public class Terrain {
         }
         for(Tree curTree : this.trees){
             curTree.drawSelf(gl, frame);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.drawSelf(gl, frame);
+        }
+        for(Ponds curPond : this.ponds){
+            curPond.drawSelf(gl, frame);
         }
 
     }
@@ -307,9 +324,15 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
     }
 
-    private void makeTrees(GL3 gl){
+    private void makeObjects(GL3 gl) {
         for(Tree curTree : this.trees){
             curTree.init(gl);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.init(gl);
+        }
+        for(Ponds curPond : this.ponds){
+            curPond.init(gl);
         }
     }
 
@@ -317,6 +340,12 @@ public class Terrain {
         myTexture.destroy(gl);
         for(Tree curTree : this.trees){
             curTree.destroy(gl);
+        }
+        for(Road curRoad : this.roads){
+            curRoad.destroy(gl);
+        }
+        for(Ponds curPond : this.ponds){
+            curPond.destroy(gl);
         }
     }
     

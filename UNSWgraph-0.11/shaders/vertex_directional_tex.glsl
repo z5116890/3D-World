@@ -1,3 +1,4 @@
+
 // A shader that performs Phong shading by interpolating the normals and
 // coordinates of each vertex in camera coordinates.
 //
@@ -25,7 +26,7 @@ out vec2 texCoordFrag;
 
 
 void main() {
-	// The global position is in homogenous coordinates
+    // The global position is in homogenous coordinates
     vec4 globalPosition = model_matrix * vec4(position, 1);
     // The position in camera coordinates
     viewPosition = view_matrix * globalPosition;
