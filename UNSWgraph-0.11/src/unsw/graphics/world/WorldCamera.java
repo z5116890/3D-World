@@ -41,6 +41,7 @@ public class WorldCamera implements KeyListener {
         this.myAvatar = new Avatar(terrain.getWidth()/2f, 10, terrain.getDepth()*2f - 7);
         //need distance to calculate rotation around avatar
         this.distanceFromAvatar = Math.abs(myPos.getZ() + this.myAvatar.getPosition().getZ());
+        this.direction = new Point3D(0,0,-1);
         
     }
 
@@ -99,6 +100,10 @@ public class WorldCamera implements KeyListener {
             //press A to show avatar    
             case KeyEvent.VK_A:
                 this.myAvatar.setShow(!this.myAvatar.getShow());
+                //make sure camera adjusts to avatar when in third person as soon as key pressed
+                float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
+        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
+        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
                 break;
             //press n for night time
             case KeyEvent.VK_N:
@@ -127,8 +132,6 @@ public class WorldCamera implements KeyListener {
         this.myAvatar.setPos(new Point3D(this.myAvatar.getPosition().getX(), myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), this.myAvatar.getPosition().getZ()));
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
         viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
-        //update direction every key press for spotlight
-        this.direction = new Point3D( this.myAvatar.getPosition().getX() + this.myPos.getX(),  -this.myPos.getY(),  this.myAvatar.getPosition().getZ() + this.myPos.getZ());
     }
 
     @Override
@@ -140,8 +143,7 @@ public class WorldCamera implements KeyListener {
     }
     
     public void setTorch(GL3 gl, CoordFrame3D frame) {
-        //set torch direction
-    	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
+    	//set cutoff
     	Shader.setFloat(gl, "inner_cutoff", 0.99999f);
         Shader.setFloat(gl, "outer_cutoff", 0.98888f);
         //attenuation
@@ -151,8 +153,6 @@ public class WorldCamera implements KeyListener {
         
         //if torch mode, pass in the direction to fragment shader
     	if(this.showTorch){
-	    	frame.transform(pos);
-	        Shader.setPoint3D(gl, "camPos", pos);
 	        this.direction = frame.transform(this.direction);
 	        Shader.setPoint3D(gl, "torchDirection", this.direction);
 	        Shader.setPenColor(gl, Color.WHITE);
