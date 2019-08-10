@@ -1,29 +1,23 @@
 INDEX VERSION 1.129+/Users/austinlam/Documents/GitHub/comp3421/.metadata/.plugins/org.eclipse.jdt.core
 2172581040.index
-2221295203.index
 689424933.index
+2221295203.index
 2711610662.index
-<<<<<<< HEAD
-=======
-2484740727.index
->>>>>>> c3888832a2a0ee8c886fe58b3174fd5a881bdf9e
 2590753327.index
-3427357359.index
 2484740727.index
+3427357359.index
 3639734245.index
 1491307213.index
 3016393792.index
-4127408136.index
 3494943228.index
+4127408136.index
 736392922.index
 768833816.index
 100746928.index
 2355253489.index
 274973108.index
 107715650.index
-1626861633.index
 583096489.index
-1626861633.index
 978166412.index
 1271342938.index
 1459831283.index
