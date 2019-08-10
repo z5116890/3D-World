@@ -59,9 +59,15 @@ public class World extends Application3D {
      * @throws FileNotFoundException change run configurations
      */
     public static void main(String[] args) throws IOException {
+<<<<<<< HEAD
         File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
         Terrain terrain = LevelIO.load(temp);
 //        Terrain terrain = LevelIO.load(new File(args[0]));
+=======
+        //File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
+        //Terrain terrain = LevelIO.load(temp);
+    	Terrain terrain = LevelIO.load(new File(args[0]));
+>>>>>>> parent of 81ed488... cahgnes
         World world = new World(terrain);
         world.start();
     }
@@ -78,7 +84,7 @@ public class World extends Application3D {
         this.myCamera.setView(gl);
         this.terrain.drawSelf(gl, frame);
         this.myCamera.setTorch(gl, frame);
-
+        
         //if avatar showing then draw it every frame
         if(this.myCamera.getAvatar().getShow()){
         	this.myCamera.getAvatar().drawSelf(gl);
@@ -114,6 +120,7 @@ public class World extends Application3D {
 		}
         getWindow().addKeyListener(myCamera);
         shader.use(gl);
+        
     }
 
     @Override

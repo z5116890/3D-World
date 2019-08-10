@@ -51,8 +51,13 @@ public class Terrain {
         this.width = width;
         this.depth = depth;
         altitudes = new float[width][depth];
+<<<<<<< HEAD
         trees = new ArrayList<>();
         roads = new ArrayList<>();
+=======
+        trees = new ArrayList<Tree>();
+        roads = new ArrayList<Road>();
+>>>>>>> parent of 81ed488... cahgnes
         this.sunlight = sunlight;
         terrainMeshes = new ArrayList<>();
     }
@@ -228,8 +233,12 @@ public class Terrain {
      * @param z
      */
     public void addRoad(float width, List<Point2D> spine) {
+<<<<<<< HEAD
         //TODO: may store the last computed x and z to speed up the computation, since most road are on same altitude
         Road road = new Road(width, spine, computeAltitude(spine.get(0).getX(), spine.get(1).getY()));
+=======
+        Road road = new Road(width, spine);
+>>>>>>> parent of 81ed488... cahgnes
         roads.add(road);        
     }
     
@@ -261,7 +270,8 @@ public class Terrain {
                 terrainMeshes.add(second);
             }
         }
-        this.makeObjects(gl);
+        this.makeTrees(gl);
+
     }
     
     
@@ -281,9 +291,12 @@ public class Terrain {
         for(Tree curTree : this.trees){
             curTree.drawSelf(gl, frame);
         }
+<<<<<<< HEAD
         for(Road curRoad : this.roads){
             curRoad.drawSelf(gl, frame);
         }
+=======
+>>>>>>> parent of 81ed488... cahgnes
 
     }
     //set lighting properties for terrain
@@ -310,13 +323,16 @@ public class Terrain {
         Shader.setPenColor(gl, Color.WHITE);
     }
 
-    private void makeObjects(GL3 gl) {
+    private void makeTrees(GL3 gl){
         for(Tree curTree : this.trees){
             curTree.init(gl);
         }
+<<<<<<< HEAD
         for(Road curRoad : this.roads){
             curRoad.init(gl);
         }
+=======
+>>>>>>> parent of 81ed488... cahgnes
     }
 
     public void destroyObjects(GL3 gl){
@@ -324,9 +340,12 @@ public class Terrain {
         for(Tree curTree : this.trees){
             curTree.destroy(gl);
         }
+<<<<<<< HEAD
         for(Road curRoad : this.roads){
             curRoad.destroy(gl);
         }
+=======
+>>>>>>> parent of 81ed488... cahgnes
     }
     
     public void setSunlightColour(Color c){

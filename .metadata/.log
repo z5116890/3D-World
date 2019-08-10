@@ -3708,7 +3708,6 @@ Caused by: org.eclipse.aether.transfer.ArtifactNotFoundException: Failure to fin
 
 !ENTRY org.eclipse.recommenders.models.rcp 1 0 2019-08-01 14:36:01.217
 !MESSAGE jre:jre:call:zip:1.0.0 could not be resolved from the model repositories. Are you offline?
-<<<<<<< HEAD
 
 !ENTRY org.eclipse.jdt.core 4 4 2019-08-07 12:45:07.783
 !MESSAGE Background Indexer Crash Recovery
@@ -6182,6 +6181,7 @@ org.apache.http.client.HttpResponseException: Service Temporarily Unavailable
 	at com.google.common.util.concurrent.AbstractIdleService$2$1.run(AbstractIdleService.java:54)
 	at com.google.common.util.concurrent.Callables$3.run(Callables.java:93)
 	at java.lang.Thread.run(Thread.java:745)
+<<<<<<< HEAD
 =======
 >>>>>>> c3888832a2a0ee8c886fe58b3174fd5a881bdf9e
 
@@ -6470,3 +6470,5 @@ org.eclipse.core.runtime.CoreException: Cannot determine URI for '/UNSWgraph-0.1
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
 !SUBENTRY 2 org.eclipse.core.filebuffers 4 0 2019-08-10 14:51:18.212
 !MESSAGE Cannot determine URI for '/UNSWgraph-0.11/src/unsw/graphics/world/World.java'.
+=======
+>>>>>>> parent of 81ed488... cahgnes

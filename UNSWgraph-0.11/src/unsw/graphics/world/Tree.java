@@ -21,6 +21,8 @@ public class Tree{
     private Point3D position;
     private Texture myTexture;
     private static TriangleMesh myTree;
+    private String textureFilename = "res/Textures/tree.jpg";
+    private String textureExtension = "jpg";
 
     public Tree(float x, float y, float z) throws IOException {
         myTree = new TriangleMesh("res/models/tree.ply", true, true);
@@ -43,8 +45,6 @@ public class Tree{
 
     public void init(GL3 gl) {
         myTree.init(gl);
-        String textureFilename = "res/Textures/tree.jpg";
-        String textureExtension = "jpg";
         myTexture = new Texture(gl, textureFilename, textureExtension, false);
 
     }

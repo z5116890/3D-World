@@ -21,19 +21,19 @@ uniform float phongExp;
 in vec4 viewPosition;
 in vec3 m;
 
-
+ 
 void main()
 {
     vec3 m_unit = normalize(m);
     // Compute the s, v and r vectors
-
+    
     // The vector from the point to the light source. 
     //vec3 s = normalize(-sunlightDirection,1) - viewPosition).xyz;
     vec3 s = normalize(-sunlightDirection);
-
+    
     // The vector from the point to the camera
     vec3 v = normalize(-viewPosition.xyz);
-
+    
     // The reflected vector
     vec3 r = normalize(reflect(-s,m_unit));
 
@@ -43,9 +43,9 @@ void main()
 
     // Only show specular reflections for the front face
     if (dot(m_unit,s) > 0)
-    specular = max(lightIntensity*specularCoeff*pow(dot(r,v),phongExp), 0.0);
+        specular = max(lightIntensity*specularCoeff*pow(dot(r,v),phongExp), 0.0);
     else
-    specular = vec3(0);
+        specular = vec3(0);
 
     vec3 intensity = ambient + diffuse + specular;
 
