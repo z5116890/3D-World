@@ -18,9 +18,9 @@ import unsw.graphics.geometry.Point3D;
 
 /**
  * //EXTENSIONS DONE:
- * Distance Attenuation for spotlight (WorldCamera and fragment_directional_tex.glsl
- * pond with animated texture (test8.json and Ponds.java + Terrain.java)
- * fog (fragment_directional_tex.glsl)
+ * Distance Attenuation for spotlight
+ * pond with animated texture (test8.json)
+ * fog (range based)
  */
 /**
  * COMMENT: Comment Game

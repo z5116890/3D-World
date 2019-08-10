@@ -148,13 +148,15 @@ public class WorldCamera implements KeyListener {
         Shader.setFloat(gl, "constant", 1f);
         Shader.setFloat(gl, "linear", 0.0009f);
         Shader.setFloat(gl, "quadratic", 0.0052f);
-        
-        //if torch mode, pass in the direction to fragment shader
     	if(this.showTorch){
 	    	frame.transform(pos);
 	        Shader.setPoint3D(gl, "camPos", pos);
 	        this.direction = frame.transform(this.direction);
 	        Shader.setPoint3D(gl, "torchDirection", this.direction);
+	        
+	        
+	        
+	
 	        Shader.setPenColor(gl, Color.WHITE);
     	}else{
     		Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0,0));

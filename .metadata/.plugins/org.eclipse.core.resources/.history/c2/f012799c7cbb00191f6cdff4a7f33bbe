@@ -78,7 +78,6 @@ public class WorldCamera implements KeyListener {
             	myAngle += 5;
         		this.myAvatar.setAngle(-5);
         		this.angleToAvatar += 5;
-        		//if avatar mode then move around the avatar
         		if(this.myAvatar.getShow()){
 	        		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
 	        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
@@ -127,7 +126,6 @@ public class WorldCamera implements KeyListener {
         this.myAvatar.setPos(new Point3D(this.myAvatar.getPosition().getX(), myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), this.myAvatar.getPosition().getZ()));
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
         viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
-        //update direction every key press for spotlight
         this.direction = new Point3D( this.myAvatar.getPosition().getX() + this.myPos.getX(),  -this.myPos.getY(),  this.myAvatar.getPosition().getZ() + this.myPos.getZ());
     }
 
@@ -144,17 +142,23 @@ public class WorldCamera implements KeyListener {
     	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
     	Shader.setFloat(gl, "inner_cutoff", 0.99999f);
         Shader.setFloat(gl, "outer_cutoff", 0.98888f);
-        //attenuation
         Shader.setFloat(gl, "constant", 1f);
         Shader.setFloat(gl, "linear", 0.0009f);
         Shader.setFloat(gl, "quadratic", 0.0052f);
-        
-        //if torch mode, pass in the direction to fragment shader
     	if(this.showTorch){
+    		//camera pos
+	    	
+	    	//fragment shader calculates the vector from torchStart(camera position) to torchEnd
+	    	
+	    	//pos = this.direction;
 	    	frame.transform(pos);
 	        Shader.setPoint3D(gl, "camPos", pos);
 	        this.direction = frame.transform(this.direction);
 	        Shader.setPoint3D(gl, "torchDirection", this.direction);
+	        
+	        
+	        
+	
 	        Shader.setPenColor(gl, Color.WHITE);
     	}else{
     		Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0,0));

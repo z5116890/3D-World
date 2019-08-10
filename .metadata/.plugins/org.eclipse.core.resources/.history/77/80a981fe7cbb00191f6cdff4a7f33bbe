@@ -52,6 +52,10 @@ public class Avatar extends TriangleMesh{
 
 
     public void drawSelf(GL3 gl){
+    	//configure to make avatar climb more aesthetically
+        //For cube
+//    	CoordFrame3D modelFrame = frame.translate(myPos).translate(0, 0.5f, 0).rotateY(myAngle);
+        //For wolf //translate(0, 0.3f, 3.5f)
     	Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
 
         gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are
