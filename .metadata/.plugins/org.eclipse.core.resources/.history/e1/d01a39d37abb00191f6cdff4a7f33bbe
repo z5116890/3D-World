@@ -56,15 +56,9 @@ public class Avatar extends TriangleMesh{
         //For cube
 //    	CoordFrame3D modelFrame = frame.translate(myPos).translate(0, 0.5f, 0).rotateY(myAngle);
         //For wolf //translate(0, 0.3f, 3.5f)
-    	Shader.setInt(gl, "tex", 0); // tex in the shader is the 0'th active texture
-
-        gl.glActiveTexture(GL.GL_TEXTURE0); // All future texture operations are
-        // for the 0'th active texture
-        gl.glBindTexture(GL.GL_TEXTURE_2D, myTexture.getId()); // Bind the texture id of the
-        // texture we want to the 0th active texture
         CoordFrame3D modelFrame = frame.translate(myPos).rotateY(myAngle)
-                .rotateX(100).rotateY(180).scale(3f,3f,3f);
-        Shader.setPenColor(gl, Color.WHITE);
+                .rotateX(100).rotateY(180);
+        Shader.setPenColor(gl, Color.BLUE);
         this.draw(gl, modelFrame);
 
     }
@@ -83,9 +77,6 @@ public class Avatar extends TriangleMesh{
 
     public void setFrame(CoordFrame3D frame){
     	this.frame = frame;
-    }
-    public void makeAvatar(GL3 gl){
-    	myTexture = new Texture(gl, textureFilename, textureExtension, false);
     }
 
 

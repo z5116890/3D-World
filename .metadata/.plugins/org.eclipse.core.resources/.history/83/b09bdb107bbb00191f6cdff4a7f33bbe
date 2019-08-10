@@ -64,7 +64,7 @@ public class Avatar extends TriangleMesh{
         // texture we want to the 0th active texture
         CoordFrame3D modelFrame = frame.translate(myPos).rotateY(myAngle)
                 .rotateX(100).rotateY(180).scale(3f,3f,3f);
-        Shader.setPenColor(gl, Color.WHITE);
+        Shader.setPenColor(gl, Color.BLUE);
         this.draw(gl, modelFrame);
 
     }

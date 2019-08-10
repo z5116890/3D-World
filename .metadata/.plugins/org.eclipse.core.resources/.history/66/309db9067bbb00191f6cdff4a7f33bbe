@@ -63,8 +63,8 @@ public class Avatar extends TriangleMesh{
         gl.glBindTexture(GL.GL_TEXTURE_2D, myTexture.getId()); // Bind the texture id of the
         // texture we want to the 0th active texture
         CoordFrame3D modelFrame = frame.translate(myPos).rotateY(myAngle)
-                .rotateX(100).rotateY(180).scale(3f,3f,3f);
-        Shader.setPenColor(gl, Color.WHITE);
+                .rotateX(100).rotateY(180).scale(7f,7f,7f);
+        Shader.setPenColor(gl, Color.BLUE);
         this.draw(gl, modelFrame);
 
     }
