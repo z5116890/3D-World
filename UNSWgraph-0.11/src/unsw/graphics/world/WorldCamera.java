@@ -15,19 +15,18 @@ public class WorldCamera implements KeyListener {
     private float myAngle; // Only rotate around y-axis
     private Terrain myTerrain;
     private CoordFrame3D viewFrame;
-    private int dimLevel = 1;
     
     //avatar
     private Avatar myAvatar;
     private float distanceFromAvatar;
     private float angleToAvatar = 270;
     
-    //spotlight
-    private Point3D torchEnd;
-    
+    //night time
+    private boolean night = false;
     
     //torch
     private boolean showTorch = false;
+    private Point3D direction;
     
 
     public WorldCamera(Terrain terrain, GL3 gl) throws IOException {
@@ -39,9 +38,9 @@ public class WorldCamera implements KeyListener {
         //camera position for test 1: -5, 0 , -20
         //avatar is positioned just in front of camera
         this.myAvatar = new Avatar(terrain.getWidth()/2f, 10, terrain.getDepth()*2f - 7);
-        this.torchEnd = new Point3D(terrain.getWidth()/2f, 0f, terrain.getDepth()*2f - 10);
         //need distance to calculate rotation around avatar
         this.distanceFromAvatar = Math.abs(myPos.getZ() + this.myAvatar.getPosition().getZ());
+        
     }
 
     public void setView(GL3 gl) {
@@ -86,13 +85,11 @@ public class WorldCamera implements KeyListener {
 
             case KeyEvent.VK_DOWN:
                 myPos = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
-                torchEnd = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosDown(this.myAngle);
                 break;
 
             case KeyEvent.VK_UP:
                 myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
-                torchEnd = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosUp(this.myAngle);
                 break;
                 
@@ -100,21 +97,14 @@ public class WorldCamera implements KeyListener {
             case KeyEvent.VK_A:
                 this.myAvatar.setShow(!this.myAvatar.getShow());
                 break;
-            
-            case KeyEvent.VK_L:
-            	if(this.myTerrain.getSunlightColour() == Color.YELLOW.brighter()){
-            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker());
-            	}else if(this.dimLevel == 1){
-            		this.myTerrain.setSunlightColour(Color.YELLOW.brighter());
-            	}else if(this.dimLevel == 2){
-            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker());
-            	}else if(this.dimLevel == 3){
-            		this.myTerrain.setSunlightColour(Color.YELLOW.darker().darker().darker());
+            //press n for night time
+            case KeyEvent.VK_N:
+            	this.night = !this.night;
+            	if(this.night){
+            		this.myTerrain.setSunlightColour(Color.YELLOW.BLACK);
             	}else{
             		this.myTerrain.setSunlightColour(Color.YELLOW.brighter());
-            		this.dimLevel = 0;
             	}
-            	this.dimLevel++;
             	break;
             	
             	//press S to show torch    
@@ -134,7 +124,7 @@ public class WorldCamera implements KeyListener {
         this.myAvatar.setPos(new Point3D(this.myAvatar.getPosition().getX(), myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), this.myAvatar.getPosition().getZ()));
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
         viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
-
+        this.direction = new Point3D( this.myAvatar.getPosition().getX() + this.myPos.getX(),  -this.myPos.getY(),  this.myAvatar.getPosition().getZ() + this.myPos.getZ());
     }
 
     @Override
@@ -147,30 +137,24 @@ public class WorldCamera implements KeyListener {
     
     public void setTorch(GL3 gl, CoordFrame3D frame) {
         //set torch direction
-    	
+    	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
     	if(this.showTorch){
     		//camera pos
-	    	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
+	    	
 	    	//fragment shader calculates the vector from torchStart(camera position) to torchEnd
-	    	Point3D torchStart = frame.transform(pos);
-	        Shader.setPoint3D(gl, "camPos", torchStart);
-	        Point3D lightDir = frame.transform(torchEnd);
-	        Shader.setPoint3D(gl, "torchEnd", lightDir);
-	        
-	        Shader.setFloat(gl, "inner_cutoff", (float)Math.cos(12.5));
-	        Shader.setFloat(gl, "outer_cutoff", 0.993f);
-	        Shader.setFloat(gl, "light_constant",  1.0f);
-	        Shader.setFloat(gl, "light_linear",    0.09f);
-	        Shader.setFloat(gl, "light_quadratic", 0.032f);
+	    	
+	    	//pos = this.direction;
+	    	frame.transform(pos);
+	        Shader.setPoint3D(gl, "camPos", pos);
+	        this.direction = frame.transform(this.direction);
+	        Shader.setPoint3D(gl, "torchDirection", this.direction);
+	        Shader.setFloat(gl, "inner_cutoff", 0.99999f);
+	        Shader.setFloat(gl, "outer_cutoff", 0.98888f);
 	        
 	
 	        Shader.setPenColor(gl, Color.WHITE);
     	}else{
-    		Point3D pos = new Point3D(0,this.myPos.getY(),0);
-	    	Point3D torchStart = frame.transform(pos);
-	        Shader.setPoint3D(gl, "myDirection", torchStart);
-	
-	        Shader.setPenColor(gl, Color.WHITE);
+    		Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0,0));
     	}
     }
 

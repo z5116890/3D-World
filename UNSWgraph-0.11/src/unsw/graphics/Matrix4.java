@@ -231,7 +231,7 @@ public class Matrix4 {
         return new Vector4(r);
     }
     
-    private Vector4 getColumn(int x) {
+    public Vector4 getColumn(int x) {
         float[] vec = new float[4];
         for (int y = 0; y < 4; y++) {
             vec[y] = values[x*4 + y];
@@ -239,7 +239,7 @@ public class Matrix4 {
         return new Vector4(vec);
     }
     
-    private Vector4 getRow(int y) {
+    public Vector4 getRow(int y) {
         float[] vec = new float[4];
         for (int x = 0; x < 4; x++) {
             vec[x] = values[x*4 + y];

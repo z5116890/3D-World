@@ -7,10 +7,10 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import unsw.graphics.*;
+import java.awt.Color;
+
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
-
-import java.awt.Color;
 
 public class Avatar extends TriangleMesh{
     private Point3D myPos;

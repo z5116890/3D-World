@@ -1,0 +1,67 @@
+package unsw.graphics.world;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+import unsw.graphics.CoordFrame3D;
+import unsw.graphics.Shader;
+import unsw.graphics.Texture;
+import unsw.graphics.geometry.Point2D;
+import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.TriangleMesh;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Ponds {
+    private Point3D position;
+    private List<Texture> waterTextures;
+    private static TriangleMesh myPond;
+    private float width;
+    private final static int textNum = 250;
+    private int curTexture;
+
+    public Ponds(Point3D pondPosition, float pondWidth) {
+        position = pondPosition;
+        width = pondWidth;
+        waterTextures = new ArrayList<>();
+        curTexture = 0;
+    }
+
+    public Point3D getPosition() {
+        return position;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void init(GL3 gl) {
+    	System.out.println("hi");
+        List<Point3D> vertices = Arrays.asList(new Point3D(1, 0, 1), new Point3D(1, 0, -1),
+                new Point3D(-1, 0, -1), new Point3D(-1, 0, 1));
+        List<Integer> indices = Arrays.asList(3,0,2,0,1,2);
+        List<Point2D> texCoords = Arrays.asList(new Point2D(0,0), new Point2D(1, 0),
+                new Point2D(0,1), new Point2D(1,1));
+        myPond = new TriangleMesh(vertices, indices, true, texCoords);
+        myPond.init(gl);
+        for(int i = 0; i < textNum; ++i){
+            waterTextures.add(new Texture(gl, "res/Textures/water/w" + i + ".jpg", "jpg", false));
+        }
+    }
+
+    public void destroy(GL3 gl){
+        myPond.destroy(gl);
+    }
+
+    public void drawSelf(GL3 gl, CoordFrame3D frame){
+        Shader.setInt(gl, "tex", 0);
+
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, waterTextures.get(curTexture % textNum).getId());
+        Shader.setPenColor(gl, Color.WHITE);
+        myPond.draw(gl, frame.translate(0, 0.02f, 0).translate(position).scale(width, 1, width));
+        ++curTexture;
+    }
+}
