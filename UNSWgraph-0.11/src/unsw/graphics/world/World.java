@@ -59,7 +59,9 @@ public class World extends Application3D {
      * @throws FileNotFoundException change run configurations
      */
     public static void main(String[] args) throws IOException {
-        Terrain terrain = LevelIO.load(new File(args[0]));
+        File temp = new File("/Users/jennifer/Documents/Courses/comp3421/ass2/comp3421/UNSWgraph-0.11/res/worlds/test4.json");
+        Terrain terrain = LevelIO.load(temp);
+//        Terrain terrain = LevelIO.load(new File(args[0]));
         World world = new World(terrain);
         world.start();
     }
