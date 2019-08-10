@@ -138,11 +138,6 @@ public class WorldCamera implements KeyListener {
     public void setTorch(GL3 gl, CoordFrame3D frame) {
         //set torch direction
     	Point3D pos = new Point3D(-this.myPos.getX(),-this.myPos.getY() ,-this.myPos.getZ());
-    	Shader.setFloat(gl, "inner_cutoff", 0.99999f);
-        Shader.setFloat(gl, "outer_cutoff", 0.98888f);
-        Shader.setFloat(gl, "constant", 1f);
-        Shader.setFloat(gl, "linear", 0.0009f);
-        Shader.setFloat(gl, "quadratic", 0.0052f);
     	if(this.showTorch){
     		//camera pos
 	    	
@@ -153,14 +148,17 @@ public class WorldCamera implements KeyListener {
 	        Shader.setPoint3D(gl, "camPos", pos);
 	        this.direction = frame.transform(this.direction);
 	        Shader.setPoint3D(gl, "torchDirection", this.direction);
-	        
+	        Shader.setFloat(gl, "inner_cutoff", 0.99999f);
+	        Shader.setFloat(gl, "outer_cutoff", 0.98888f);
+	        Shader.setFloat(gl, "constant", 1f);
+	        Shader.setFloat(gl, "linear", 0.0009f);
+	        Shader.setFloat(gl, "quadratic", 0.0052f);
 	        
 	        
 	
 	        Shader.setPenColor(gl, Color.WHITE);
     	}else{
     		Shader.setPoint3D(gl, "torchDirection", new Point3D(0,0,0));
-    		Shader.setPenColor(gl, Color.WHITE);
     	}
     }
 

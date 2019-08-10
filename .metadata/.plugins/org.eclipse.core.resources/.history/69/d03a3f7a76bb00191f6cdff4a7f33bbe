@@ -27,10 +27,12 @@ public class WorldCamera implements KeyListener {
     //torch
     private boolean showTorch = false;
     private Point3D direction;
-    
+    private Point3D torchStart;
+   
 
     public WorldCamera(Terrain terrain, GL3 gl) throws IOException {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
+        torchStart = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
         myAngle = 0;
         myTerrain = terrain;
         viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 0);
@@ -85,11 +87,13 @@ public class WorldCamera implements KeyListener {
 
             case KeyEvent.VK_DOWN:
                 myPos = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                torchStart = myPos.translate(-.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, -.1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosDown(this.myAngle);
                 break;
 
             case KeyEvent.VK_UP:
                 myPos = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
+                torchStart = myPos.translate(.1f * (float) Math.sin(Math.toRadians(-myAngle)) * 5, 0, .1f * (float) Math.cos(Math.toRadians(-myAngle)) * 5);
                 this.myAvatar.setPosUp(this.myAngle);
                 break;
                 
@@ -119,12 +123,13 @@ public class WorldCamera implements KeyListener {
         	myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), myPos.getZ());
         }else{
         	myPos = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
+        	torchStart = new Point3D(myPos.getX(), -myTerrain.computeAltitude(-myPos.getX(), -myPos.getZ()), myPos.getZ());
         }
         //set position of avatar
         this.myAvatar.setPos(new Point3D(this.myAvatar.getPosition().getX(), myTerrain.computeAltitude(this.myAvatar.getPosition().getX(), this.myAvatar.getPosition().getZ()), this.myAvatar.getPosition().getZ()));
         viewFrame = CoordFrame3D.identity().rotateY(myAngle);
         viewFrame = viewFrame.translate(myPos).translate(0, -1.5f, 0);
-        this.direction = new Point3D( this.myAvatar.getPosition().getX() + this.myPos.getX(),  -this.myPos.getY(),  this.myAvatar.getPosition().getZ() + this.myPos.getZ());
+        this.direction = new Point3D( this.myAvatar.getPosition().getX() + this.torchStart.getX(),  -this.myPos.getY(),  this.myAvatar.getPosition().getZ() + this.myPos.getZ());
     }
 
     @Override

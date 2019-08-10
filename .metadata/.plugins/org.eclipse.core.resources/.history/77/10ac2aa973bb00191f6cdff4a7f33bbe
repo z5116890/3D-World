@@ -22,9 +22,6 @@ uniform vec3 specularCoeff;
 uniform float phongExp;
 uniform float inner_cutoff;
 uniform float outer_cutoff;
-uniform float constant;
-uniform float linear;
-uniform float quadratic;
 
 uniform sampler2D tex;
 
@@ -44,8 +41,7 @@ void main()
     visibility = clamp(visibility, 0.0, 1.0);
 
     //attenuated distance
-    float attenuation =  1.0 / (constant + linear * distance + 
-    		    quadratic * (distance * distance));
+    float attenuation = clamp( 7.0 / distance, 0.0, 1.0);
 
 
     //directional light

@@ -27,10 +27,12 @@ public class WorldCamera implements KeyListener {
     //torch
     private boolean showTorch = false;
     private Point3D direction;
-    
+    private Point3D torchStart;
+   
 
     public WorldCamera(Terrain terrain, GL3 gl) throws IOException {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
+        torchStart = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
         myAngle = 0;
         myTerrain = terrain;
         viewFrame = CoordFrame3D.identity().translate(myPos).translate(0, -1.5f, 0);
@@ -69,6 +71,7 @@ public class WorldCamera implements KeyListener {
         		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
         		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
         		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+        		torchStart = new Point3D(cameraX, myPos.getY(), cameraY);
         		}
                 break;
 
@@ -80,6 +83,7 @@ public class WorldCamera implements KeyListener {
 	        		float cameraX = (float) (this.distanceFromAvatar * Math.cos(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getX());
 	        		float cameraY = (float) (this.distanceFromAvatar * Math.sin(Math.toRadians(this.angleToAvatar)) - this.myAvatar.getPosition().getZ());
 	        		myPos = new Point3D(cameraX, myPos.getY(), cameraY);
+	        		torchStart = new Point3D(cameraX, myPos.getY(), cameraY);
         		}
                 break;
 

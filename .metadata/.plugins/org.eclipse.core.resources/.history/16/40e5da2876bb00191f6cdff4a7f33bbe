@@ -27,7 +27,8 @@ public class WorldCamera implements KeyListener {
     //torch
     private boolean showTorch = false;
     private Point3D direction;
-    
+    private Point3D torchStart;
+   
 
     public WorldCamera(Terrain terrain, GL3 gl) throws IOException {
         myPos = new Point3D(-terrain.getWidth()/2f, 0f, -terrain.getDepth()*2f);
