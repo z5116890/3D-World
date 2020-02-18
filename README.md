@@ -2,6 +2,7 @@
 - The terrain is built as a mesh of triangles with vertices at each of the grid points with the corresponding altitude. The world is rendered using Phong Shading for lighting and uses vertex and fragment shader to support directional light.
 - Avatar was created to mimic a Minecraft feel to the 3D World.
 - Night Mode turns off directional lighting.
+- Terrain slowly disappears the further you are away from it.
 
 
 <img src="Screen Shot 2020-02-18 at 1.04.57 pm.png" style="width: 400px;"/>
